@@ -2,10 +2,9 @@
 from pathlib import Path
 from datetime import datetime, date
 from openpyxl import load_workbook
+import os
 
-WORKBOOK = Path(
-    "/Users/patrotter/Documents/Professional/Networking/Networking.xlsx"
-)
+WORKBOOK = Path(os.environ["NETWORKING_WORKBOOK"])
 
 def main():
     target_date = date.fromisoformat(

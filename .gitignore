@@ -218,3 +218,19 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Personal Excel data
+*.xlsx
+*.xls
+*.xlsm
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+
+# macOS
+.DS_Store
+
+# Excel temporary and lock files
+~$*
