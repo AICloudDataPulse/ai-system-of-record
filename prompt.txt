@@ -1,0 +1,9 @@
+Let's continue developing the AICloudDataPulse `ai-system-of-record` GitHub project.
+
+Please use our previous discussions and the repository's `PROJECT_CONTEXT.md` as context.
+
+We have completed Milestone 2: a Python script successfully queries a local Excel workbook for networking follow-ups by date.
+
+We are working incrementally, using GitHub Flow and read-only operations initially.
+
+Please help me proceed with the next small development task, one step at a time.
