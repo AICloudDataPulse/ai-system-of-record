@@ -3,7 +3,7 @@
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Current branch:** `feature/networking-followups`  
 **Development environment:** macOS (Apple Silicon), VS Code, Python 3.12.3  
-**Status:** Milestone 2 completed — read-only Excel follow-up query working.
+**Status:** Milestone 3 completed — environment-based workbook configuration implemented and tested successfully.
 
 ## 1. Project objective
 
@@ -76,6 +76,16 @@ Result: three matching contacts.
 
 The workbook was not modified.
 
+**Milestone 3 — Completed**
+
+Removed the hardcoded workbook path and introduced the
+NETWORKING_WORKBOOK environment variable.
+
+Verified that the November 7, 2026 query still returns
+the same three contacts.
+
+The workbook remains read-only.
+
 ## 6. Next development tasks
 
 1. Commit the working script and dependency declaration if not already committed.
@@ -121,6 +131,7 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 The date-based Excel follow-up query works.
 
-**Next immediate task:** Commit the working baseline and move workbook configuration outside the source code.
+**Next immediate task:** Open a pull request to merge the
+tested networking follow-up functionality into main.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
