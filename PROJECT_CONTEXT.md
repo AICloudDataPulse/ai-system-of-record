@@ -1,9 +1,9 @@
 # AI System of Record — Project Context
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
-**Current branch:** `feature/networking-followups`  
-**Development environment:** macOS (Apple Silicon), VS Code, Python 3.12.3  
-**Status:** Milestone 3 completed — environment-based workbook configuration implemented and tested successfully.
+**Current branch:** `feature/followup-validation`
+**Development environment:** macOS, VS Code, Python 3.12.3
+**Status:** Milestones 1–3 completed and merged into `main`. Milestone 4 in preparation.
 
 ## 1. Project objective
 
@@ -86,14 +86,24 @@ the same three contacts.
 
 The workbook remains read-only.
 
+**First GitHub Flow cycle — Completed**
+
+- Implemented and tested Milestones 1–3.
+- Created and reviewed the first pull request.
+- Squash-merged `feature/networking-followups` into `main`.
+- Synchronized the local `main` branch with GitHub.
+- Deleted the completed local feature branch.
+- Created `feature/followup-validation` for Milestone 4.
+
 ## 6. Next development tasks
 
-1. Commit the working script and dependency declaration if not already committed.
-2. Remove the hardcoded local workbook path from the source code.
-3. Introduce environment-based configuration.
-4. Improve date parsing, input validation, and error handling.
-5. Add automated tests using synthetic workbook data.
-6. Document usage and architecture.
+1. Milestone 4 — Improve input validation and error handling.
+   - Handle invalid date input.
+   - Handle missing `NETWORKING_WORKBOOK` configuration.
+   - Handle missing or inaccessible workbook files.
+2. Add automated tests using synthetic workbook data.
+3. Document usage and architecture.
+4. Expand read-only query capabilities.
 
 ## 7. Longer-term roadmap
 
@@ -129,9 +139,14 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-The date-based Excel follow-up query works.
+Milestones 1–3 have been completed, tested, and merged into `main`.
 
-**Next immediate task:** Open a pull request to merge the
-tested networking follow-up functionality into main.
+Current working branch: `feature/followup-validation`.
+
+**Next immediate task:** Implement and manually test invalid date
+input handling in `networking/followups.py`.
+
+Proceed incrementally, making one small, independently testable
+change at a time.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
