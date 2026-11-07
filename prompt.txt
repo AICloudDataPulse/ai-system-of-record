@@ -1,9 +1,19 @@
 Let's continue developing the AICloudDataPulse `ai-system-of-record` GitHub project.
 
-Please use our previous discussions and the repository's `PROJECT_CONTEXT.md` as context.
+Repository: `AICloudDataPulse/ai-system-of-record`
 
-We have completed Milestone 2: a Python script successfully queries a local Excel workbook for networking follow-ups by date.
+Please connect to GitHub and read `PROJECT_CONTEXT.md` to establish:
 
-We are working incrementally, using GitHub Flow and read-only operations initially.
+- The project's objectives and architectural decisions.
+- The current implementation and completed milestones.
+- The active development branch.
+- The next development task.
+- The engineering principles and longer-term roadmap.
 
-Please help me proceed with the next small development task, one step at a time.
+Review the relevant source files before proposing changes.
+
+We are following GitHub Flow, developing incrementally, and validating each milestone before proceeding.
+
+Please recommend the next small development step based on `PROJECT_CONTEXT.md`. Do not implement changes until we have agreed on the approach.
+
+Keep the solution simple and maintain good configuration management and security practices.
