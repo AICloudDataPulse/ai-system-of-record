@@ -3,7 +3,11 @@
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Current branch:** `feature/followup-validation`
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–3 completed and merged into `main`. Milestone 4 in progress — date validation implemented and four automated tests passing. Manual validation of the complete script is pending.
+**Status:** Milestones 1–3 completed and merged into `main`.
+Milestone 4 in progress — date-input and workbook-configuration
+validation implemented, with seven automated tests passing.
+Manual missing-configuration validation passed.
+Manual date checks and workbook-file error handling remain outstanding.
 
 ## 1. Project objective
 
@@ -141,8 +145,6 @@ Milestone 4 is not yet complete.
 
 ## 6. Next development tasks
 
-## 6. Next development tasks
-
 1. Complete manual validation of the date-validation increment.
 2. Review the diff and commit the validated code, tests, and context
    update on `feature/followup-validation`.
@@ -202,15 +204,25 @@ Milestones 1–3 are completed and merged into `main`.
 
 Current working branch: `feature/followup-validation`.
 
-The date-validation increment is implemented locally.
-All four automated tests pass.
+Date-input validation and missing or empty workbook-configuration
+handling are implemented. All seven automated tests pass.
 
-**Next immediate task:** Manually validate the complete script with
-a valid date and an invalid date, including the invalid-input exit
-status. Then review and commit this increment with its tests and
-updated project context.
+Manual missing-configuration validation passed: a clear error is
+displayed without a traceback, and the script exits with status 1.
 
-After that, address missing or empty workbook configuration as the
-next small, independently testable change.
+Manual date validation remains pending:
+- Confirm a valid date returns the expected workbook results.
+- Confirm invalid date input displays a clear error without a traceback.
+- Confirm invalid date input exits with status 1.
+
+**Next immediate task:** Complete the manual date checks.
+
+**Next implementation step:** Handle missing or inaccessible workbook
+files and add focused automated tests.
+
+Continue making small, independently testable changes. Run the test
+suite, record validation results, and commit each completed increment
+on the feature branch. Merge through a pull request when Milestone 4
+is complete and validated.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
