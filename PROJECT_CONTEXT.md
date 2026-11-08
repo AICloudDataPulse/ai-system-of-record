@@ -5,8 +5,9 @@
 **Development environment:** macOS, VS Code, Python 3.12.3
 **Status:** Milestones 1–3 completed and merged into `main`.
 Milestone 4 implementation and local validation completed, with
-10 automated tests passing. Ready for commit, pull request review,
-and merge.
+10 automated tests passing. Code, tests, and documentation are
+committed and pushed to `feature/followup-validation`.
+Ready for pull request review and merge.
 
 ## 1. Project objective
 
@@ -146,16 +147,18 @@ workbook data.
 Malformed workbook contents and worksheet-schema validation are
 outside this milestone's scope.
 
-Commit, pull request review, and merge remain outstanding.
+Code, tests, and documentation are committed and pushed to
+`feature/followup-validation`.
+
+Pull request creation, review, and merge remain outstanding.
 
 ## 6. Next development tasks
 
-1. Review the Milestone 4 code, tests, and documentation diff.
-2. Commit and push the validated changes on
-   `feature/followup-validation`.
-3. Open and review a pull request into `main`, recording automated
-   and manual validation results.
-4. Merge the reviewed changes and synchronize local `main`.
+1. Open a pull request from `feature/followup-validation` into `main`,
+   recording automated and manual validation results.
+2. Review the complete pull request diff and address any findings.
+3. Merge the reviewed changes and synchronize local `main`.
+4. Update this context to record the merge and next working branch.
 5. Create a new short-lived feature branch for query tests using
    temporary workbooks with synthetic data.
 6. Document usage and architecture.
@@ -222,14 +225,18 @@ Milestone 4 implementation and local validation are complete:
 - Manual error checks passed with clear messages and exit status 1.
 - Successful query reconfirmed with three follow-ups for November 7, 2026.
 
-**Next immediate task:** Review the diff, commit and push the
-validated code, tests, and documentation, then open a pull request
-into `main`.
+The implementation, tests, and validation documentation are committed
+and pushed to the feature branch.
+
+**Next immediate task:** Open a pull request from
+`feature/followup-validation` into `main`, review the complete diff,
+and address any findings before merging.
 
 Milestone 4 has not yet been merged.
 
-After review and merge, synchronize local `main` and create a new
-feature branch for automated query tests using synthetic workbooks.
+After review and merge, synchronize local `main`, create a new
+feature branch for automated query tests using synthetic workbooks,
+and update this context.
 
 Continue making small, independently testable changes and validate
 each increment before proceeding.
