@@ -4,10 +4,9 @@
 **Current branch:** `feature/followup-validation`
 **Development environment:** macOS, VS Code, Python 3.12.3
 **Status:** Milestones 1–3 completed and merged into `main`.
-Milestone 4 in progress — date-input and workbook-configuration
-validation implemented, with seven automated tests passing.
-Manual missing-configuration validation passed.
-Manual date checks and workbook-file error handling remain outstanding.
+Milestone 4 implementation and local validation completed, with
+10 automated tests passing. Ready for commit, pull request review,
+and merge.
 
 ## 1. Project objective
 
@@ -118,48 +117,53 @@ The workbook remains read-only.
 - Deleted the completed local feature branch.
 - Created `feature/followup-validation` for Milestone 4.
 
-**Milestone 4 — In progress**
+**Milestone 4 — Implementation and local validation completed**
 
-Implemented date-input validation, workbook configuration validation,
-and automated tests.
+Implemented:
+- Strict YYYY-MM-DD date validation with surrounding whitespace allowed.
+- Clear error handling for invalid date input.
+- Missing or empty NETWORKING_WORKBOOK configuration handling.
+- Missing workbook, permission-denied, and other file-access error handling.
+- Automated tests using Python's built-in unittest framework.
 
 Verified locally:
-- Seven automated tests pass.
-- Date coverage includes valid dates, surrounding whitespace, a valid
-  leap day, and eight invalid-input cases.
-- Configuration coverage includes missing, empty, whitespace-only,
+- All 10 automated tests pass.
+- Date tests cover valid dates, surrounding whitespace, leap-day
+  handling, and eight invalid-input cases.
+- Configuration tests cover missing, empty, whitespace-only,
   and configured workbook paths.
-- Manual missing-configuration check passed: clear error without
-  a traceback and exit status 1.
+- File-access tests simulate missing files, permission failures,
+  and other operating-system errors.
+- Manual invalid-date and missing-configuration checks passed:
+  clear errors without tracebacks and exit status 1.
+- Manual missing-file check passed: clear error without a traceback
+  and exit status 1.
+- The normal November 7, 2026 query still returns three follow-ups.
 
-Manual validation pending:
-- Confirm a valid date still returns the expected workbook results.
-- Confirm invalid date input displays a clear error without a traceback.
-- Confirm invalid date input exits with status 1.
+Workbook access remains read-only. Tests do not require personal
+workbook data.
 
-Remaining Milestone 4 work:
-- Handle missing or inaccessible workbook files.
-- Add automated tests for workbook-file error handling.
+Malformed workbook contents and worksheet-schema validation are
+outside this milestone's scope.
 
-Milestone 4 is not yet complete.
+Commit, pull request review, and merge remain outstanding.
 
 ## 6. Next development tasks
 
-1. Complete manual date validation:
-   - Confirm a valid date returns the expected workbook results.
-   - Confirm invalid input displays a clear error without a traceback.
-   - Confirm invalid input exits with status 1.
-2. Add missing or inaccessible workbook-file handling and focused
-   automated tests.
-3. Validate Milestone 4, update this context, and merge the feature
-   branch into `main` through a reviewed pull request.
-4. Add query tests using temporary workbooks with synthetic data.
-5. Document usage and architecture.
-6. Expand read-only query capabilities.
+1. Review the Milestone 4 code, tests, and documentation diff.
+2. Commit and push the validated changes on
+   `feature/followup-validation`.
+3. Open and review a pull request into `main`, recording automated
+   and manual validation results.
+4. Merge the reviewed changes and synchronize local `main`.
+5. Create a new short-lived feature branch for query tests using
+   temporary workbooks with synthetic data.
+6. Document usage and architecture.
+7. Expand read-only query capabilities.
 
 Complete and validate each increment before starting the next.
-Run the test suite, review the diff, and commit each tested increment
-on `feature/followup-validation`.
+Include focused automated tests with behavior changes and record
+validation results in this context.
 
 Keep personal workbook data and local configuration out of Git.
 
@@ -210,25 +214,24 @@ Milestones 1–3 are completed and merged into `main`.
 
 Current working branch: `feature/followup-validation`.
 
-Date-input validation and missing or empty workbook-configuration
-handling are implemented. All seven automated tests pass.
+Milestone 4 implementation and local validation are complete:
+- Date-input validation.
+- Missing or empty workbook-configuration handling.
+- Missing or inaccessible workbook-file handling.
+- All 10 automated tests passing.
+- Manual error checks passed with clear messages and exit status 1.
+- Successful query reconfirmed with three follow-ups for November 7, 2026.
 
-Manual missing-configuration validation passed: a clear error is
-displayed without a traceback, and the script exits with status 1.
+**Next immediate task:** Review the diff, commit and push the
+validated code, tests, and documentation, then open a pull request
+into `main`.
 
-Manual date validation remains pending:
-- Confirm a valid date returns the expected workbook results.
-- Confirm invalid date input displays a clear error without a traceback.
-- Confirm invalid date input exits with status 1.
+Milestone 4 has not yet been merged.
 
-**Next immediate task:** Complete the manual date checks.
+After review and merge, synchronize local `main` and create a new
+feature branch for automated query tests using synthetic workbooks.
 
-**Next implementation step:** Handle missing or inaccessible workbook
-files and add focused automated tests.
-
-Continue making small, independently testable changes. Run the test
-suite, record validation results, and commit each completed increment
-on the feature branch. Merge through a pull request when Milestone 4
-is complete and validated.
+Continue making small, independently testable changes and validate
+each increment before proceeding.
 
 Do not introduce MCP, agents, or additional infrastructure yet.

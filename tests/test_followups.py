@@ -3,8 +3,13 @@ from datetime import date
 
 from pathlib import Path
 from unittest.mock import patch
+from io import StringIO
 
-from networking.followups import get_workbook_path, parse_followup_date
+from networking.followups import (
+    get_workbook_path,
+    main,
+    parse_followup_date,
+)
 
 
 class ParseFollowupDateTests(unittest.TestCase):
@@ -74,6 +79,45 @@ class WorkbookConfigurationTests(unittest.TestCase):
                 get_workbook_path(),
                 Path(workbook_path),
             )
+
+class WorkbookFileErrorTests(unittest.TestCase):
+    def check_file_error(self, error, expected_message):
+        with (
+            patch("builtins.input", return_value="2026-11-07"),
+            patch.dict(
+                "os.environ",
+                {"NETWORKING_WORKBOOK": "/synthetic/Networking.xlsx"},
+                clear=True,
+            ),
+            patch(
+                "networking.followups.load_workbook",
+                side_effect=error,
+            ),
+            patch("sys.stderr", new_callable=StringIO) as stderr,
+        ):
+            with self.assertRaises(SystemExit) as raised:
+                main()
+
+            self.assertEqual(raised.exception.code, 1)
+            self.assertIn(expected_message, stderr.getvalue())
+
+    def test_missing_file(self):
+        self.check_file_error(
+            FileNotFoundError(),
+            "Workbook not found.",
+        )
+
+    def test_permission_denied(self):
+        self.check_file_error(
+            PermissionError(),
+            "Workbook cannot be read.",
+        )
+
+    def test_other_file_access_error(self):
+        self.check_file_error(
+            OSError(),
+            "Workbook could not be opened.",
+        )
 
 if __name__ == "__main__":
     unittest.main()

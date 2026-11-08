@@ -43,11 +43,31 @@ def main():
         print(error, file=sys.stderr)
         sys.exit(1)
 
-    workbook = load_workbook(
-        workbook_path,
-        read_only=True,
-        data_only=True
-    )
+    try:
+        workbook = load_workbook(
+            workbook_path,
+            read_only=True,
+            data_only=True,
+        )
+    except FileNotFoundError:
+        print(
+            "Workbook not found. Check NETWORKING_WORKBOOK.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    except PermissionError:
+        print(
+            "Workbook cannot be read. Check file access permissions.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    except OSError:
+        print(
+            "Workbook could not be opened. Check that the path "
+            "points to an accessible Excel file.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
     try:
         sheet = workbook["Contacts"]
