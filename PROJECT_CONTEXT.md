@@ -145,17 +145,23 @@ Milestone 4 is not yet complete.
 
 ## 6. Next development tasks
 
-1. Complete manual validation of the date-validation increment.
-2. Review the diff and commit the validated code, tests, and context
-   update on `feature/followup-validation`.
-3. Add missing or empty workbook-configuration handling and tests.
-4. Add missing or inaccessible workbook-file handling and tests.
-5. Add query tests using temporary workbooks with synthetic data.
-6. Document usage and architecture.
-7. Expand read-only query capabilities.
+1. Complete manual date validation:
+   - Confirm a valid date returns the expected workbook results.
+   - Confirm invalid input displays a clear error without a traceback.
+   - Confirm invalid input exits with status 1.
+2. Add missing or inaccessible workbook-file handling and focused
+   automated tests.
+3. Validate Milestone 4, update this context, and merge the feature
+   branch into `main` through a reviewed pull request.
+4. Add query tests using temporary workbooks with synthetic data.
+5. Document usage and architecture.
+6. Expand read-only query capabilities.
 
 Complete and validate each increment before starting the next.
-Merge completed, tested work into `main` through a pull request.
+Run the test suite, review the diff, and commit each tested increment
+on `feature/followup-validation`.
+
+Keep personal workbook data and local configuration out of Git.
 
 ## 7. Longer-term roadmap
 
