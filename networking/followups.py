@@ -3,16 +3,48 @@ from pathlib import Path
 from datetime import datetime, date
 from openpyxl import load_workbook
 import os
+import sys
 
-WORKBOOK = Path(os.environ["NETWORKING_WORKBOOK"])
+def parse_followup_date(value):
+    value = value.strip()
+    parsed_date = date.fromisoformat(value)
+
+    if value != parsed_date.isoformat():
+        raise ValueError("Expected YYYY-MM-DD format")
+
+    return parsed_date
+
+def get_workbook_path():
+    value = os.environ.get("NETWORKING_WORKBOOK")
+
+    if value is None or not value.strip():
+        raise ValueError(
+            "NETWORKING_WORKBOOK is not set or is empty. "
+            "Set it to the path of your Excel workbook."
+        )
+
+    return Path(value)
 
 def main():
-    target_date = date.fromisoformat(
-        input("Enter follow-up date (YYYY-MM-DD): ").strip()
-    )
+    try:
+        target_date = parse_followup_date(
+            input("Enter follow-up date (YYYY-MM-DD): ")
+        )
+    except ValueError:
+        print(
+            "Invalid date. Enter a valid date in YYYY-MM-DD format.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    try:
+        workbook_path = get_workbook_path()
+    except ValueError as error:
+        print(error, file=sys.stderr)
+        sys.exit(1)
 
     workbook = load_workbook(
-        WORKBOOK,
+        workbook_path,
         read_only=True,
         data_only=True
     )

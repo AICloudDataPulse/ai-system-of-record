@@ -3,7 +3,7 @@
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Current branch:** `feature/followup-validation`
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–3 completed and merged into `main`. Milestone 4 in preparation.
+**Status:** Milestones 1–3 completed and merged into `main`. Milestone 4 in progress — date validation implemented and four automated tests passing. Manual validation of the complete script is pending.
 
 ## 1. Project objective
 
@@ -62,6 +62,25 @@ The workbook currently contains four worksheets:
 - Applications
 - Interviews
 
+### Date validation and testing
+
+- `parse_followup_date()` validates calendar dates and requires
+  `YYYY-MM-DD` format, allowing surrounding whitespace.
+- Invalid input produces a clear error and exits with status 1 before
+  opening the workbook.
+- Workbook configuration is read inside `main()`, allowing the parser
+  to be imported without setting `NETWORKING_WORKBOOK`.
+- Automated tests use Python's built-in `unittest` framework.
+- Test file: `tests/test_followups.py`.
+
+Run tests from the repository root with the project virtual
+environment activated:
+
+    python -m unittest discover -s tests -v
+
+Dependencies must be installed in the virtual environment from
+`requirements.txt`.
+
 ## 5. Verified milestones
 
 **Milestone 1 — Completed**
@@ -95,15 +114,46 @@ The workbook remains read-only.
 - Deleted the completed local feature branch.
 - Created `feature/followup-validation` for Milestone 4.
 
+**Milestone 4 — In progress**
+
+Implemented date-input validation, workbook configuration validation,
+and automated tests.
+
+Verified locally:
+- Seven automated tests pass.
+- Date coverage includes valid dates, surrounding whitespace, a valid
+  leap day, and eight invalid-input cases.
+- Configuration coverage includes missing, empty, whitespace-only,
+  and configured workbook paths.
+- Manual missing-configuration check passed: clear error without
+  a traceback and exit status 1.
+
+Manual validation pending:
+- Confirm a valid date still returns the expected workbook results.
+- Confirm invalid date input displays a clear error without a traceback.
+- Confirm invalid date input exits with status 1.
+
+Remaining Milestone 4 work:
+- Handle missing or inaccessible workbook files.
+- Add automated tests for workbook-file error handling.
+
+Milestone 4 is not yet complete.
+
 ## 6. Next development tasks
 
-1. Milestone 4 — Improve input validation and error handling.
-   - Handle invalid date input.
-   - Handle missing `NETWORKING_WORKBOOK` configuration.
-   - Handle missing or inaccessible workbook files.
-2. Add automated tests using synthetic workbook data.
-3. Document usage and architecture.
-4. Expand read-only query capabilities.
+## 6. Next development tasks
+
+1. Complete manual validation of the date-validation increment.
+2. Review the diff and commit the validated code, tests, and context
+   update on `feature/followup-validation`.
+3. Add missing or empty workbook-configuration handling and tests.
+4. Add missing or inaccessible workbook-file handling and tests.
+5. Add query tests using temporary workbooks with synthetic data.
+6. Document usage and architecture.
+7. Expand read-only query capabilities.
+
+Complete and validate each increment before starting the next.
+Merge completed, tested work into `main` through a pull request.
 
 ## 7. Longer-term roadmap
 
@@ -136,17 +186,31 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 - Keep personal information out of public repositories.
 - Avoid introducing AI where deterministic code is sufficient.
 - Preserve Git configuration-management discipline.
+- Include focused automated tests with changes to parsing, validation,
+  configuration handling, and query behavior.
+- Run the existing test suite before committing an increment.
+- Use synthetic data and temporary workbooks for automated tests;
+  never depend on personal workbook data or a developer-specific path.
+- Supplement automated tests with manual checks of the user-facing
+  script where appropriate.
+- Record what was tested and distinguish verified results from
+  pending checks.
 
 ## 9. Current stopping point
 
-Milestones 1–3 have been completed, tested, and merged into `main`.
+Milestones 1–3 are completed and merged into `main`.
 
 Current working branch: `feature/followup-validation`.
 
-**Next immediate task:** Implement and manually test invalid date
-input handling in `networking/followups.py`.
+The date-validation increment is implemented locally.
+All four automated tests pass.
 
-Proceed incrementally, making one small, independently testable
-change at a time.
+**Next immediate task:** Manually validate the complete script with
+a valid date and an invalid date, including the invalid-input exit
+status. Then review and commit this increment with its tests and
+updated project context.
+
+After that, address missing or empty workbook configuration as the
+next small, independently testable change.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
