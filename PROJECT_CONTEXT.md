@@ -2,13 +2,13 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Context-update branch:** `docs/milestone-5-status`
-**Next development branch (proposed; not yet created):** `docs/usage-and-architecture`
+**Current documentation branch:** `docs/usage-and-architecture`
 **Development environment:** macOS, VS Code, Python 3.12.3
 **Status:** Milestones 1–5 completed and merged into `main`.
 Milestone 5 merged through PR #3 on November 9, 2026.
 All 14 automated tests also passed locally on macOS.
-The next proposed increment is usage and architecture documentation.
+Milestone 6 usage and architecture documentation is prepared and validated;
+PR review and merge remain pending.
 
 ## 1. Project objective
 
@@ -187,19 +187,36 @@ by the developer's terminal output:
 Validation used temporary synthetic workbooks; the personal workbook
 was not required.
 
+**Milestone 6 — Documentation prepared and validated; merge pending**
+
+Expanded `README.md` with environment setup, workbook configuration,
+query/test commands, required worksheet headers, architecture, data protection,
+current limitations, and the GitHub Flow review process.
+
+Validation on November 9, 2026 in the execution environment:
+- Reviewed the documentation against the current source and pinned dependencies.
+- Activated the existing virtual environment and checked requirements installation.
+- All 14 automated tests passed with Python 3.12.14 and openpyxl 3.1.5.
+- Ran the documented script entry point using a temporary synthetic workbook
+  at a path containing spaces; output matched the README example and exit status was 0.
+- Checked invalid-date and missing-configuration invocations: clear errors
+  and exit status 1.
+- No application code, tests, dependencies, or infrastructure changed.
+
+The existing execution virtual environment uses installed runtime packages.
+Fresh dependency downloads and a new macOS setup were not revalidated.
+No personal workbook was accessed.
+
+The preceding context-only update was merged through PR #4
+(commit `281eac089e4e9fc9e10f7df7ed308739496a1391`).
+
 ## 6. Next development tasks
 
-1. Review and merge this context-only update, then synchronize local `main`.
-2. For the next agreed increment, create `docs/usage-and-architecture`
-   from updated `main`. This branch is proposed and has not yet been created.
-3. Expand `README.md` to document:
-   - Virtual-environment setup and dependency installation.
-   - `NETWORKING_WORKBOOK` configuration using a placeholder path.
-   - Commands to run the follow-up query and automated tests.
-   - Required worksheet and column names.
-   - Current architecture, read-only behavior, data protection, and limitations.
-4. Validate documented commands and examples before review and merge.
-5. Expand read-only query capabilities in a later increment.
+1. Review the documentation PR from `docs/usage-and-architecture`.
+2. Address review findings, then merge and synchronize local `main`.
+3. Record the documentation merge in this context with the next agreed increment.
+4. Agree on one small read-only query enhancement before implementation.
+   Expanded query capabilities remain future work.
 
 Complete and validate each increment before starting the next.
 Include focused automated tests with behavior changes and record
@@ -251,21 +268,20 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 ## 9. Current stopping point
 
 Milestones 1–5 are completed and merged into `main`.
-Milestone 5 merged through PR #3 at
-`9129e5f3c2e453a82cb57c0e44ce108233d0a2c6`.
+The context-only status update was merged through PR #4.
 
-All 14 automated tests passed in the development execution environment
-and locally on the developer's Mac with `.venv` activated.
-The local test result was confirmed from terminal output on November 9, 2026.
-Production code and dependencies are unchanged.
+Milestone 6 documentation is prepared on `docs/usage-and-architecture`.
+Only `README.md` and `PROJECT_CONTEXT.md` change in this increment.
+The README documents existing behavior; it introduces no new capabilities.
 
-This context-only update is on `docs/milestone-5-status`.
-Review and merge of this documentation update remain pending.
+All 14 automated tests pass in the execution environment. The documented
+script invocation and synthetic output were verified, along with invalid-date
+and missing-configuration exit behavior. See Section 5 for validation limits.
+The earlier macOS run of all 14 tests remains recorded under Milestone 5.
 
-**Next development increment:** Document usage and architecture in
-`README.md`, following the scope in Section 6.
-The proposed branch is `docs/usage-and-architecture`; it has not yet
-been created, and the README work has not started.
+**Next immediate task:** Review the documentation PR before merging.
+After merge, synchronize local `main` and agree on the next small read-only
+query increment. No subsequent implementation has started.
 
 Continue making small, independently testable changes and validate
 each increment before proceeding.
