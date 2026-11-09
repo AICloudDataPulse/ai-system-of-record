@@ -1,13 +1,14 @@
 # AI System of Record — Project Context
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
-**Current branch:** `feature/followup-query-tests`
+**Stable branch:** `main`
+**Context-update branch:** `docs/milestone-5-status`
+**Next development branch (proposed; not yet created):** `docs/usage-and-architecture`
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–4 completed and merged into `main`.
-Milestone 4 merged through PR #2 on November 8, 2026.
-Milestone 5 query tests implemented and validated on
-`feature/followup-query-tests`; all 14 automated tests pass.
-Review and merge of Milestone 5 remain pending.
+**Status:** Milestones 1–5 completed and merged into `main`.
+Milestone 5 merged through PR #3 on November 9, 2026.
+All 14 automated tests also passed locally on macOS.
+The next proposed increment is usage and architecture documentation.
 
 ## 1. Project objective
 
@@ -152,7 +153,7 @@ outside this milestone's scope.
 Merged into `main` through PR #2 on November 8, 2026
 (merge commit `9e08e26178070f7be3b387f8c4c79ec9846c249d`).
 
-**Milestone 5 — Query tests implemented and validated; merge pending**
+**Milestone 5 — Completed and merged**
 
 Added four automated tests in `tests/test_followup_queries.py`:
 - Matching contact details and total, including a date-time value with
@@ -171,16 +172,34 @@ Verified on November 9, 2026 in the development execution environment:
 - `python -m unittest discover -s tests -v`: all 14 tests passed.
 - No production code or dependency changes.
 
-These are automated results from synthetic workbooks. The personal workbook
-and the developer's macOS checkout were not accessed or revalidated.
+Merged into `main` through [PR #3](https://github.com/AICloudDataPulse/ai-system-of-record/pull/3)
+on November 9, 2026
+(merge commit `9129e5f3c2e453a82cb57c0e44ce108233d0a2c6`).
+
+Local validation also completed on macOS on November 9, 2026, as confirmed
+by the developer's terminal output:
+- Project `.venv` activated.
+- Dependencies from `requirements.txt` satisfied:
+  openpyxl 3.1.5 and et_xmlfile 2.0.0.
+- `python -m unittest discover -s tests -v`: all 14 tests passed,
+  ending with `OK`.
+
+Validation used temporary synthetic workbooks; the personal workbook
+was not required.
 
 ## 6. Next development tasks
 
-1. Review the query-test increment on `feature/followup-query-tests`.
-2. Merge the reviewed pull request and synchronize local `main`.
-3. Update this context to record the merge and next working branch.
-4. Document usage and architecture in a subsequent small increment.
-5. Expand read-only query capabilities.
+1. Review and merge this context-only update, then synchronize local `main`.
+2. For the next agreed increment, create `docs/usage-and-architecture`
+   from updated `main`. This branch is proposed and has not yet been created.
+3. Expand `README.md` to document:
+   - Virtual-environment setup and dependency installation.
+   - `NETWORKING_WORKBOOK` configuration using a placeholder path.
+   - Commands to run the follow-up query and automated tests.
+   - Required worksheet and column names.
+   - Current architecture, read-only behavior, data protection, and limitations.
+4. Validate documented commands and examples before review and merge.
+5. Expand read-only query capabilities in a later increment.
 
 Complete and validate each increment before starting the next.
 Include focused automated tests with behavior changes and record
@@ -231,20 +250,22 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–4 are completed and merged into `main`.
+Milestones 1–5 are completed and merged into `main`.
+Milestone 5 merged through PR #3 at
+`9129e5f3c2e453a82cb57c0e44ce108233d0a2c6`.
 
-Current working branch: `feature/followup-query-tests`, based on
-`main` at `9e08e26178070f7be3b387f8c4c79ec9846c249d`.
-
-Milestone 5 adds four query tests using temporary synthetic workbooks.
-All 14 automated tests pass in Python 3.12.14 with openpyxl 3.1.5.
+All 14 automated tests passed in the development execution environment
+and locally on the developer's Mac with `.venv` activated.
+The local test result was confirmed from terminal output on November 9, 2026.
 Production code and dependencies are unchanged.
 
-**Next immediate task:** Review the Milestone 5 pull request and address
-any findings before merging. Milestone 5 has not yet been merged.
+This context-only update is on `docs/milestone-5-status`.
+Review and merge of this documentation update remain pending.
 
-The developer's local macOS branch and synchronization state are unverified.
-After review and merge, synchronize local `main` and update this context.
+**Next development increment:** Document usage and architecture in
+`README.md`, following the scope in Section 6.
+The proposed branch is `docs/usage-and-architecture`; it has not yet
+been created, and the README work has not started.
 
 Continue making small, independently testable changes and validate
 each increment before proceeding.
