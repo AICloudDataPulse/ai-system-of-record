@@ -1,13 +1,13 @@
 # AI System of Record — Project Context
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
-**Current branch:** `feature/followup-validation`
+**Current branch:** `feature/followup-query-tests`
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–3 completed and merged into `main`.
-Milestone 4 implementation and local validation completed, with
-10 automated tests passing. Code, tests, and documentation are
-committed and pushed to `feature/followup-validation`.
-Ready for pull request review and merge.
+**Status:** Milestones 1–4 completed and merged into `main`.
+Milestone 4 merged through PR #2 on November 8, 2026.
+Milestone 5 query tests implemented and validated on
+`feature/followup-query-tests`; all 14 automated tests pass.
+Review and merge of Milestone 5 remain pending.
 
 ## 1. Project objective
 
@@ -75,7 +75,9 @@ The workbook currently contains four worksheets:
 - Workbook configuration is read inside `main()`, allowing the parser
   to be imported without setting `NETWORKING_WORKBOOK`.
 - Automated tests use Python's built-in `unittest` framework.
-- Test file: `tests/test_followups.py`.
+- Validation tests: `tests/test_followups.py`.
+- Query tests: `tests/test_followup_queries.py`, using temporary synthetic
+  workbooks and the real read-only workbook loader.
 
 Run tests from the repository root with the project virtual
 environment activated:
@@ -118,7 +120,7 @@ The workbook remains read-only.
 - Deleted the completed local feature branch.
 - Created `feature/followup-validation` for Milestone 4.
 
-**Milestone 4 — Implementation and local validation completed**
+**Milestone 4 — Completed and merged**
 
 Implemented:
 - Strict YYYY-MM-DD date validation with surrounding whitespace allowed.
@@ -147,22 +149,38 @@ workbook data.
 Malformed workbook contents and worksheet-schema validation are
 outside this milestone's scope.
 
-Code, tests, and documentation are committed and pushed to
-`feature/followup-validation`.
+Merged into `main` through PR #2 on November 8, 2026
+(merge commit `9e08e26178070f7be3b387f8c4c79ec9846c249d`).
 
-Pull request creation, review, and merge remain outstanding.
+**Milestone 5 — Query tests implemented and validated; merge pending**
+
+Added four automated tests in `tests/test_followup_queries.py`:
+- Matching contact details and total, including a date-time value with
+  a non-midnight time.
+- Exclusion of contacts due on other dates and contacts with blank dates.
+- Zero matching contacts.
+- Byte-for-byte workbook preservation after a successful query.
+
+Tests generate synthetic Excel workbooks in `TemporaryDirectory` and
+exercise `main()` with the real workbook loader. Input, configuration,
+and console output are controlled within each test. Temporary files are
+cleaned up automatically; no workbook fixtures or personal data are committed.
+
+Verified on November 9, 2026 in the development execution environment:
+- Python 3.12.14 and openpyxl 3.1.5.
+- `python -m unittest discover -s tests -v`: all 14 tests passed.
+- No production code or dependency changes.
+
+These are automated results from synthetic workbooks. The personal workbook
+and the developer's macOS checkout were not accessed or revalidated.
 
 ## 6. Next development tasks
 
-1. Open a pull request from `feature/followup-validation` into `main`,
-   recording automated and manual validation results.
-2. Review the complete pull request diff and address any findings.
-3. Merge the reviewed changes and synchronize local `main`.
-4. Update this context to record the merge and next working branch.
-5. Create a new short-lived feature branch for query tests using
-   temporary workbooks with synthetic data.
-6. Document usage and architecture.
-7. Expand read-only query capabilities.
+1. Review the query-test increment on `feature/followup-query-tests`.
+2. Merge the reviewed pull request and synchronize local `main`.
+3. Update this context to record the merge and next working branch.
+4. Document usage and architecture in a subsequent small increment.
+5. Expand read-only query capabilities.
 
 Complete and validate each increment before starting the next.
 Include focused automated tests with behavior changes and record
@@ -213,30 +231,20 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–3 are completed and merged into `main`.
+Milestones 1–4 are completed and merged into `main`.
 
-Current working branch: `feature/followup-validation`.
+Current working branch: `feature/followup-query-tests`, based on
+`main` at `9e08e26178070f7be3b387f8c4c79ec9846c249d`.
 
-Milestone 4 implementation and local validation are complete:
-- Date-input validation.
-- Missing or empty workbook-configuration handling.
-- Missing or inaccessible workbook-file handling.
-- All 10 automated tests passing.
-- Manual error checks passed with clear messages and exit status 1.
-- Successful query reconfirmed with three follow-ups for November 7, 2026.
+Milestone 5 adds four query tests using temporary synthetic workbooks.
+All 14 automated tests pass in Python 3.12.14 with openpyxl 3.1.5.
+Production code and dependencies are unchanged.
 
-The implementation, tests, and validation documentation are committed
-and pushed to the feature branch.
+**Next immediate task:** Review the Milestone 5 pull request and address
+any findings before merging. Milestone 5 has not yet been merged.
 
-**Next immediate task:** Open a pull request from
-`feature/followup-validation` into `main`, review the complete diff,
-and address any findings before merging.
-
-Milestone 4 has not yet been merged.
-
-After review and merge, synchronize local `main`, create a new
-feature branch for automated query tests using synthetic workbooks,
-and update this context.
+The developer's local macOS branch and synchronization state are unverified.
+After review and merge, synchronize local `main` and update this context.
 
 Continue making small, independently testable changes and validate
 each increment before proceeding.
