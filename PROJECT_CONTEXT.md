@@ -2,12 +2,13 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current development branch:** `feature/followups-due-through`
+**Current documentation branch:** `docs/milestone-7-status`
+**Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–6 completed and merged into `main`.
-Milestone 6 merged through PR #5 on November 9, 2026.
-Milestone 7 due-through queries are implemented and validated on the feature
-branch; PR review, local macOS validation, and merge remain pending.
+**Status:** Milestones 1–7 completed and merged into `main`.
+Milestone 7 merged through PR #6 on November 10, 2026.
+The developer confirmed local testing before the merge.
+This documentation-only update records completion and the session stopping point.
 
 ## 1. Project objective
 
@@ -215,7 +216,7 @@ on November 9, 2026 (commit `c8ec6b40d97ad4521af7df9320fa69f90869f1ef`).
 The developer's November 10 terminal output confirmed local `main` at this
 commit with a clean working tree and the virtual environment active.
 
-**Milestone 7 — Implemented and validated; review and merge pending**
+**Milestone 7 — Completed and merged**
 
 Added the optional `--due-through` command-line flag. The existing interactive
 date prompt remains; without the flag, exact-date behavior is unchanged.
@@ -234,15 +235,26 @@ Validation on November 10, 2026 in the execution environment:
 - Read-only loading, configuration, and pinned dependencies are unchanged.
 
 The execution virtual environment uses installed runtime packages;
-fresh dependency downloads and local macOS validation of this increment
-remain unverified.
+fresh dependency downloads were not revalidated.
+
+The developer confirmed successful local testing and merge on November 10,
+2026. Detailed local test output was not supplied for this increment; the
+21-test execution-environment result above is independently recorded.
+
+Merged into `main` through [PR #6](https://github.com/AICloudDataPulse/ai-system-of-record/pull/6)
+on November 10, 2026
+(merge commit `9616ae3e2b9aeea613a8ac0da564d5cb6651cc2c`).
+GitHub confirmed that `main` points to this merge commit. Synchronization of
+the developer's local `main` after this merge has not been confirmed.
 
 ## 6. Next development tasks
 
-1. Review the due-through query PR from `feature/followups-due-through`.
-2. Run the 21-test suite and try both query modes locally on macOS.
-3. Address any findings, then merge and synchronize local `main`.
-4. Record the merge with the next agreed increment.
+1. Review and merge this documentation-only status update.
+2. Synchronize local `main` with GitHub after merging.
+3. At the next session, review the current source and agree on one small
+   development increment before implementation.
+
+No next feature has been selected or started.
 
 Complete and validate each increment before starting the next.
 Include focused automated tests with behavior changes and record
@@ -293,17 +305,20 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–6 are completed and merged into `main`.
-Milestone 7 is implemented on `feature/followups-due-through` and ready for
-PR review. It changes `networking/followups.py`, its query tests, `README.md`,
-and this context file. No dependencies or infrastructure were added.
+Milestones 1–7 are completed and merged into `main`.
+The optional `--due-through` query is available alongside the original
+exact-date query. Workbook access remains read-only.
 
-All 21 automated tests pass in the execution environment. Local macOS
-validation and PR merge remain pending. The earlier local baseline of
-14 passing tests remains recorded under Milestone 5.
+All 21 automated tests passed in the execution environment. The developer
+also confirmed local testing before merging PR #6; detailed local output
+was not supplied. See Section 5 for validation evidence and limits.
 
-**Next immediate task:** Review the feature PR and validate locally before
-merging. No subsequent implementation has started.
+This documentation-only update on `docs/milestone-7-status` records completion
+and leaves the project ready to resume. It changes only `PROJECT_CONTEXT.md`.
+
+**Next immediate task:** Review and merge this status update, then synchronize
+local `main`. Development is paused for the day. At the next session, agree
+on the next small increment before implementing it.
 
 Continue making small, independently testable changes and validate
 each increment before proceeding.
