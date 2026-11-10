@@ -1,4 +1,5 @@
 
+import argparse
 from pathlib import Path
 from datetime import datetime, date
 from openpyxl import load_workbook
@@ -25,7 +26,7 @@ def get_workbook_path():
 
     return Path(value)
 
-def main():
+def main(*, include_earlier=False):
     try:
         target_date = parse_followup_date(
             input("Enter follow-up date (YYYY-MM-DD): ")
@@ -87,7 +88,9 @@ def main():
             if isinstance(due, datetime):
                 due = due.date()
 
-            if isinstance(due, date) and due == target_date:
+            if isinstance(due, date) and (
+                due <= target_date if include_earlier else due == target_date
+            ):
                 count += 1
                 print(f"\nName: {row[columns['Name']]}")
                 print(f"Company: {row[columns['Company']]}")
@@ -100,4 +103,12 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Query contact follow-up dates.")
+    parser.add_argument(
+        "--due-through",
+        action="store_true",
+        help="include follow-ups due on or before the entered date",
+    )
+    args = parser.parse_args()
+    main(include_earlier=args.due_through)
+

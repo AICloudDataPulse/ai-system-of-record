@@ -2,13 +2,12 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/usage-and-architecture`
+**Current development branch:** `feature/followups-due-through`
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–5 completed and merged into `main`.
-Milestone 5 merged through PR #3 on November 9, 2026.
-All 14 automated tests also passed locally on macOS.
-Milestone 6 usage and architecture documentation is prepared and validated;
-PR review and merge remain pending.
+**Status:** Milestones 1–6 completed and merged into `main`.
+Milestone 6 merged through PR #5 on November 9, 2026.
+Milestone 7 due-through queries are implemented and validated on the feature
+branch; PR review, local macOS validation, and merge remain pending.
 
 ## 1. Project objective
 
@@ -56,7 +55,8 @@ The script:
 1. Opens the local Excel workbook in read-only mode.
 2. Reads the `Contacts` worksheet.
 3. Accepts a date in `YYYY-MM-DD` format.
-4. Matches records using the `Follow-up Due` column.
+4. Matches records using the `Follow-up Due` column: exact date by default,
+   or on/before the entered date with `--due-through`.
 5. Prints contact name, company, and next action.
 6. Reports the number of matching contacts.
 
@@ -187,7 +187,7 @@ by the developer's terminal output:
 Validation used temporary synthetic workbooks; the personal workbook
 was not required.
 
-**Milestone 6 — Documentation prepared and validated; merge pending**
+**Milestone 6 — Completed and merged**
 
 Expanded `README.md` with environment setup, workbook configuration,
 query/test commands, required worksheet headers, architecture, data protection,
@@ -210,13 +210,39 @@ No personal workbook was accessed.
 The preceding context-only update was merged through PR #4
 (commit `281eac089e4e9fc9e10f7df7ed308739496a1391`).
 
+Merged through [PR #5](https://github.com/AICloudDataPulse/ai-system-of-record/pull/5)
+on November 9, 2026 (commit `c8ec6b40d97ad4521af7df9320fa69f90869f1ef`).
+The developer's November 10 terminal output confirmed local `main` at this
+commit with a clean working tree and the virtual environment active.
+
+**Milestone 7 — Implemented and validated; review and merge pending**
+
+Added the optional `--due-through` command-line flag. The existing interactive
+date prompt remains; without the flag, exact-date behavior is unchanged.
+With the flag, records due on or before the entered date are included.
+Results retain worksheet order and the existing output fields and total.
+Blank and non-date values are skipped. Date-times use their calendar date.
+This query does not inspect completion status or infer today's date.
+
+Validation on November 10, 2026 in the execution environment:
+- The original 14-test baseline passed before changes.
+- All 21 tests passed with Python 3.12.14 and openpyxl 3.1.5.
+- Seven additional tests cover inclusive boundaries and earlier dates,
+  later/blank/text exclusions, zero matches, workbook preservation, actual
+  CLI invocations for both modes, invalid dates, and unknown CLI options.
+- Tests use temporary synthetic workbooks; no personal data was accessed.
+- Read-only loading, configuration, and pinned dependencies are unchanged.
+
+The execution virtual environment uses installed runtime packages;
+fresh dependency downloads and local macOS validation of this increment
+remain unverified.
+
 ## 6. Next development tasks
 
-1. Review the documentation PR from `docs/usage-and-architecture`.
-2. Address review findings, then merge and synchronize local `main`.
-3. Record the documentation merge in this context with the next agreed increment.
-4. Agree on one small read-only query enhancement before implementation.
-   Expanded query capabilities remain future work.
+1. Review the due-through query PR from `feature/followups-due-through`.
+2. Run the 21-test suite and try both query modes locally on macOS.
+3. Address any findings, then merge and synchronize local `main`.
+4. Record the merge with the next agreed increment.
 
 Complete and validate each increment before starting the next.
 Include focused automated tests with behavior changes and record
@@ -267,21 +293,17 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–5 are completed and merged into `main`.
-The context-only status update was merged through PR #4.
+Milestones 1–6 are completed and merged into `main`.
+Milestone 7 is implemented on `feature/followups-due-through` and ready for
+PR review. It changes `networking/followups.py`, its query tests, `README.md`,
+and this context file. No dependencies or infrastructure were added.
 
-Milestone 6 documentation is prepared on `docs/usage-and-architecture`.
-Only `README.md` and `PROJECT_CONTEXT.md` change in this increment.
-The README documents existing behavior; it introduces no new capabilities.
+All 21 automated tests pass in the execution environment. Local macOS
+validation and PR merge remain pending. The earlier local baseline of
+14 passing tests remains recorded under Milestone 5.
 
-All 14 automated tests pass in the execution environment. The documented
-script invocation and synthetic output were verified, along with invalid-date
-and missing-configuration exit behavior. See Section 5 for validation limits.
-The earlier macOS run of all 14 tests remains recorded under Milestone 5.
-
-**Next immediate task:** Review the documentation PR before merging.
-After merge, synchronize local `main` and agree on the next small read-only
-query increment. No subsequent implementation has started.
+**Next immediate task:** Review the feature PR and validate locally before
+merging. No subsequent implementation has started.
 
 Continue making small, independently testable changes and validate
 each increment before proceeding.
