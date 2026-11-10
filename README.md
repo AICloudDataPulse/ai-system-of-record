@@ -77,6 +77,22 @@ Next Action: Send an update
 Total follow-ups: 1
 ```
 
+To include follow-ups due on or before the entered date, run:
+
+```bash
+python networking/followups.py --due-through
+```
+
+For example, entering `2026-11-10` includes all actual Excel due dates up to
+and including November 10, 2026. Running without the option still matches
+only the entered date. Both modes skip blank and non-date cells and compare
+date-time values by calendar date. The cutoff is always entered explicitly;
+the script does not use today's date.
+
+This mode filters due dates only; it does not check whether an action has
+already been completed. Use `python networking/followups.py --help` for help.
+Unknown command-line options exit with status 2 before prompting for a date.
+
 Results follow worksheet order. No matches produces `Total follow-ups: 0`
 and is a successful query.
 
@@ -107,14 +123,15 @@ With the virtual environment active, run from the repository root:
 python -m unittest discover -s tests -v
 ```
 
-The current suite contains 14 tests and should finish with `OK`.
+The current suite contains 21 tests and should finish with `OK`.
 It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 
 - [tests/test_followups.py](tests/test_followups.py) covers date validation,
   configuration, and simulated file-access failures.
 - [tests/test_followup_queries.py](tests/test_followup_queries.py) creates
   temporary synthetic workbooks and checks matching output, exclusions,
-  zero matches, and byte-for-byte workbook preservation.
+  zero matches, byte-for-byte workbook preservation, and the command-line
+  behavior of both query modes.
 
 Temporary test workbooks are cleaned up automatically.
 
@@ -138,8 +155,9 @@ contact information, so use synthetic examples in shared logs and screenshots.
 
 ## Current limitations
 
-- Queries support one exact due date on `Contacts`; there are no date ranges,
-  overdue queries, or queries against other worksheets.
+- Queries support an exact due date or an inclusive due-through cutoff on
+  `Contacts`; there are no bounded date ranges, completion-status filters,
+  or queries against other worksheets.
 - Missing worksheets/headers, empty sheets, malformed workbooks, and unsupported
   file formats do not yet have friendly validation and may produce tracebacks.
 - Text dates are not parsed from workbook cells.
@@ -161,3 +179,4 @@ and broader governance safeguards. These are roadmap items, not current features
 
 See [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for architectural decisions,
 milestone evidence, and the current stopping point.
+
