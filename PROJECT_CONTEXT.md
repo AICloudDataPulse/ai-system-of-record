@@ -2,11 +2,13 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Active development branch:** `feature/contacts-schema-validation`
+**Current documentation branch:** `docs/milestone-8-status`
+**Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–7 completed and merged into `main`.
-Milestone 8 is implemented and validated in the execution environment;
-PR review, local macOS validation, and merge are pending.
+**Status:** Milestones 1–8 completed and merged into `main`.
+Milestone 8 merged through PR #8 on November 11, 2026.
+All 30 automated tests passed in the execution environment before merge.
+Local macOS validation has not been separately confirmed.
 The Milestone 7 status update was merged through PR #7 on November 10, 2026.
 
 ## 1. Project objective
@@ -249,7 +251,7 @@ on November 10, 2026
 GitHub confirmed that `main` points to this merge commit. Synchronization of
 the developer's local `main` after this merge has not been confirmed.
 
-**Milestone 8 — Implemented; review and local validation pending**
+**Milestone 8 — Completed and merged**
 
 Added validation before scanning contact records:
 - Require a worksheet named exactly `Contacts` and a nonblank first row.
@@ -276,15 +278,23 @@ Validation on November 11, 2026 in the execution environment:
 - The execution virtual environment uses installed runtime packages;
   fresh dependency downloads were not revalidated.
 
-Local macOS validation and merge have not yet been confirmed.
+Merged into `main` through [PR #8](https://github.com/AICloudDataPulse/ai-system-of-record/pull/8)
+on November 11, 2026
+(merge commit `be6452389a34e1efd2fac70673605c532d4046b2`).
+The developer reported the merge, and GitHub confirmed PR #8 is merged
+and `main` points to this commit at verification time.
+Local macOS validation and synchronization of the developer's local `main`
+have not been separately confirmed; the merge report alone is not test evidence.
 Malformed workbook and unsupported-file-format handling remain out of scope.
 
 ## 6. Next development tasks
 
-1. Review the Milestone 8 pull request from `feature/contacts-schema-validation`.
-2. Run the 30-test suite locally and confirm normal queries still work.
-3. Merge after validation, synchronize local `main`, and record completion.
-4. Agree on the next small increment before further implementation.
+1. Review and merge this documentation-only status update.
+2. Synchronize local `main` after merging.
+3. Confirm local macOS validation if it has not already been performed.
+4. Review the current source and agree on one small increment before implementation.
+
+No next feature has been selected or started.
 
 Complete and validate each increment before starting the next.
 Include focused automated tests with behavior changes and record
@@ -335,16 +345,19 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–7 and the PR #7 status update are merged into `main`.
-Milestone 8 is implemented on `feature/contacts-schema-validation` and
-ready for PR review and local validation. All 30 automated tests passed
-in the execution environment; local macOS validation and merge are pending.
+Milestones 1–8 are completed and merged into `main`.
+All 30 automated tests passed in the execution environment before the
+Milestone 8 merge. Local macOS validation and local synchronization have
+not been separately confirmed. See Section 5 for the validation evidence.
 
 Workbook access remains read-only. Both exact-date and `--due-through`
 queries retain their existing behavior for valid worksheets.
 
-**Next immediate task:** Review the PR and validate locally before merging.
-After merging, synchronize local `main` and record Milestone 8 completion.
+This documentation-only update on `docs/milestone-8-status` records the
+confirmed merge and changes only `PROJECT_CONTEXT.md`.
+
+**Next immediate task:** Review and merge this status update, then synchronize
+local `main`. Agree on the next small increment before implementing it.
 
 Continue making small, independently testable changes and validate
 each increment before proceeding.
