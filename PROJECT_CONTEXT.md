@@ -2,13 +2,12 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-7-status`
-**Active feature development:** None; next increment not yet agreed.
+**Active development branch:** `feature/contacts-schema-validation`
 **Development environment:** macOS, VS Code, Python 3.12.3
 **Status:** Milestones 1–7 completed and merged into `main`.
-Milestone 7 merged through PR #6 on November 10, 2026.
-The developer confirmed local testing before the merge.
-This documentation-only update records completion and the session stopping point.
+Milestone 8 is implemented and validated in the execution environment;
+PR review, local macOS validation, and merge are pending.
+The Milestone 7 status update was merged through PR #7 on November 10, 2026.
 
 ## 1. Project objective
 
@@ -54,7 +53,8 @@ SSH authentication is configured using a dedicated ACDP identity (`github-acdp`)
 The script:
 
 1. Opens the local Excel workbook in read-only mode.
-2. Reads the `Contacts` worksheet.
+2. Validates the `Contacts` worksheet and its required first-row headers,
+   then reads its records.
 3. Accepts a date in `YYYY-MM-DD` format.
 4. Matches records using the `Follow-up Due` column: exact date by default,
    or on/before the entered date with `--due-through`.
@@ -80,6 +80,8 @@ The workbook currently contains four worksheets:
 - Validation tests: `tests/test_followups.py`.
 - Query tests: `tests/test_followup_queries.py`, using temporary synthetic
   workbooks and the real read-only workbook loader.
+- Schema tests: `tests/test_contact_schema.py`, covering both CLI modes and
+  workbook closure after schema errors.
 
 Run tests from the repository root with the project virtual
 environment activated:
@@ -247,14 +249,42 @@ on November 10, 2026
 GitHub confirmed that `main` points to this merge commit. Synchronization of
 the developer's local `main` after this merge has not been confirmed.
 
+**Milestone 8 — Implemented; review and local validation pending**
+
+Added validation before scanning contact records:
+- Require a worksheet named exactly `Contacts` and a nonblank first row.
+- Require exactly one occurrence of each header: `Name`, `Company`,
+  `Next Action`, and `Follow-up Due`.
+- Report missing and duplicate required headers without printing workbook
+  records or the configured path. Schema errors go to standard error and
+  exit with status 1, without a traceback.
+- Preserve exact header matching, arbitrary column order, ignored extra
+  columns, both date-query modes, and read-only access.
+- A valid header-only worksheet returns zero follow-ups successfully.
+- Close the workbook on validation failure through the existing `finally` block.
+
+Validation on November 11, 2026 in the execution environment:
+- Original 21-test baseline passed before changes.
+- All 30 tests passed with Python 3.12.14 and openpyxl 3.1.5.
+- Nine new tests cover missing worksheet, empty worksheet, blank first row,
+  each missing/duplicate required header, exact header spelling/spacing,
+  header-only sheets, reordered/extra columns, and closure after schema errors.
+- CLI cases exercise both query modes with temporary synthetic workbooks;
+  error cases verify status 1, no traceback or query results, and unchanged
+  workbook bytes. Valid reordered-column queries also preserve workbook bytes.
+- No personal workbook was accessed; no dependencies or infrastructure changed.
+- The execution virtual environment uses installed runtime packages;
+  fresh dependency downloads were not revalidated.
+
+Local macOS validation and merge have not yet been confirmed.
+Malformed workbook and unsupported-file-format handling remain out of scope.
+
 ## 6. Next development tasks
 
-1. Review and merge this documentation-only status update.
-2. Synchronize local `main` with GitHub after merging.
-3. At the next session, review the current source and agree on one small
-   development increment before implementation.
-
-No next feature has been selected or started.
+1. Review the Milestone 8 pull request from `feature/contacts-schema-validation`.
+2. Run the 30-test suite locally and confirm normal queries still work.
+3. Merge after validation, synchronize local `main`, and record completion.
+4. Agree on the next small increment before further implementation.
 
 Complete and validate each increment before starting the next.
 Include focused automated tests with behavior changes and record
@@ -305,20 +335,16 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–7 are completed and merged into `main`.
-The optional `--due-through` query is available alongside the original
-exact-date query. Workbook access remains read-only.
+Milestones 1–7 and the PR #7 status update are merged into `main`.
+Milestone 8 is implemented on `feature/contacts-schema-validation` and
+ready for PR review and local validation. All 30 automated tests passed
+in the execution environment; local macOS validation and merge are pending.
 
-All 21 automated tests passed in the execution environment. The developer
-also confirmed local testing before merging PR #6; detailed local output
-was not supplied. See Section 5 for validation evidence and limits.
+Workbook access remains read-only. Both exact-date and `--due-through`
+queries retain their existing behavior for valid worksheets.
 
-This documentation-only update on `docs/milestone-7-status` records completion
-and leaves the project ready to resume. It changes only `PROJECT_CONTEXT.md`.
-
-**Next immediate task:** Review and merge this status update, then synchronize
-local `main`. Development is paused for the day. At the next session, agree
-on the next small increment before implementing it.
+**Next immediate task:** Review the PR and validate locally before merging.
+After merging, synchronize local `main` and record Milestone 8 completion.
 
 Continue making small, independently testable changes and validate
 each increment before proceeding.

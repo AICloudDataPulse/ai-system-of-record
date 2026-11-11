@@ -41,8 +41,10 @@ headers, with matching spelling, capitalization, and spaces:
 | `Next Action` | Printed next action |
 | `Follow-up Due` | Excel date or date-time used for matching |
 
-Columns may be in any order; additional columns are ignored. Other worksheets
-are not queried. Use actual Excel date values rather than text that looks like
+Each required header must appear exactly once. Columns may be in any order;
+additional columns are ignored. An empty worksheet or a blank first row is
+rejected. A worksheet containing only valid headers returns zero follow-ups.
+Other worksheets are not queried. Use actual Excel date values rather than text that looks like
 a date. Blank and non-date due values are skipped. For date-time values, only
 the calendar date is compared.
 
@@ -96,8 +98,9 @@ Unknown command-line options exit with status 2 before prompting for a date.
 Results follow worksheet order. No matches produces `Total follow-ups: 0`
 and is a successful query.
 
-Invalid date input, missing/empty configuration, and handled file-access
-failures print an error to standard error and exit with status 1.
+Invalid date input, missing/empty configuration, invalid worksheet/header
+structure, and handled file-access failures print an error to standard error
+and exit with status 1.
 Successful queries exit with status 0. To inspect the status in your shell,
 run `echo $?` immediately after the script.
 
@@ -105,6 +108,9 @@ run `echo $?` immediately after the script.
 | --- | --- |
 | Invalid date | Enter a real date in `YYYY-MM-DD` format. |
 | `NETWORKING_WORKBOOK` is not set or is empty | Export the variable in the same terminal session. |
+| Missing `Contacts` worksheet | Use a worksheet named exactly `Contacts`. |
+| Missing header row | Put the required headers in the first row. |
+| Missing or duplicate required headers | Include each required header exactly once, with exact spelling and spacing. |
 | Workbook not found | Verify that the configured file exists. |
 | Workbook cannot be read | Check file access permissions. |
 | Workbook could not be opened | Check that the path identifies an accessible Excel file. |
@@ -123,7 +129,7 @@ With the virtual environment active, run from the repository root:
 python -m unittest discover -s tests -v
 ```
 
-The current suite contains 21 tests and should finish with `OK`.
+The current suite contains 30 tests and should finish with `OK`.
 It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 
 - [tests/test_followups.py](tests/test_followups.py) covers date validation,
@@ -132,6 +138,10 @@ It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
   temporary synthetic workbooks and checks matching output, exclusions,
   zero matches, byte-for-byte workbook preservation, and the command-line
   behavior of both query modes.
+- [tests/test_contact_schema.py](tests/test_contact_schema.py) checks worksheet
+  and header errors through both CLI modes, exact header matching, reordered
+  and extra columns, header-only sheets, workbook preservation, and closure
+  after schema errors.
 
 Temporary test workbooks are cleaned up automatically.
 
@@ -158,8 +168,8 @@ contact information, so use synthetic examples in shared logs and screenshots.
 - Queries support an exact due date or an inclusive due-through cutoff on
   `Contacts`; there are no bounded date ranges, completion-status filters,
   or queries against other worksheets.
-- Missing worksheets/headers, empty sheets, malformed workbooks, and unsupported
-  file formats do not yet have friendly validation and may produce tracebacks.
+- Malformed workbooks and unsupported file formats do not yet have friendly
+  validation and may produce tracebacks.
 - Text dates are not parsed from workbook cells.
 - Formula cells use their stored cached values; the script does not calculate
   formulas. Missing or stale caches can affect query results.
