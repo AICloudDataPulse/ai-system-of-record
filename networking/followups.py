@@ -6,6 +6,31 @@ from openpyxl import load_workbook
 import os
 import sys
 
+REQUIRED_HEADERS = ("Name", "Company", "Next Action", "Follow-up Due")
+
+
+def get_contact_rows_and_columns(workbook):
+    if "Contacts" not in workbook.sheetnames:
+        raise ValueError("Workbook is missing the 'Contacts' worksheet.")
+
+    rows = workbook["Contacts"].iter_rows(values_only=True)
+    headers = next(rows, ())
+    if not any(value is not None for value in headers):
+        raise ValueError("The 'Contacts' worksheet is missing its header row.")
+
+    missing = [name for name in REQUIRED_HEADERS if name not in headers]
+    duplicates = [name for name in REQUIRED_HEADERS if headers.count(name) > 1]
+    errors = []
+    if missing:
+        errors.append("Missing required headers: " + ", ".join(missing) + ".")
+    if duplicates:
+        errors.append("Duplicate required headers: " + ", ".join(duplicates) + ".")
+    if errors:
+        raise ValueError("Invalid 'Contacts' header row. " + " ".join(errors))
+
+    return rows, {name: headers.index(name) for name in REQUIRED_HEADERS}
+
+
 def parse_followup_date(value):
     value = value.strip()
     parsed_date = date.fromisoformat(value)
@@ -71,14 +96,11 @@ def main(*, include_earlier=False):
         sys.exit(1)
 
     try:
-        sheet = workbook["Contacts"]
-        rows = sheet.iter_rows(values_only=True)
-        headers = next(rows)
-
-        columns = {
-            name: headers.index(name)
-            for name in ["Name", "Company", "Next Action", "Follow-up Due"]
-        }
+        try:
+            rows, columns = get_contact_rows_and_columns(workbook)
+        except ValueError as error:
+            print(error, file=sys.stderr)
+            sys.exit(1)
 
         count = 0
 
