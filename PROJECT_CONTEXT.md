@@ -2,14 +2,17 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-8-status`
-**Active feature development:** None; next increment not yet agreed.
+**Current development branch:** `fix/workbook-format-errors`
+**Active development:** Milestone 9 implemented; review, local validation, and merge pending.
 **Development environment:** macOS, VS Code, Python 3.12.3
 **Status:** Milestones 1–8 completed and merged into `main`.
 Milestone 8 merged through PR #8 on November 11, 2026.
 All 30 automated tests passed in the execution environment before merge.
 Local macOS validation has not been separately confirmed.
 The Milestone 7 status update was merged through PR #7 on November 10, 2026.
+The Milestone 8 status update was merged through PR #9 on November 11, 2026
+(commit `18d26ad5bf8f2888e943fece8da859a435d17f7b`).
+Milestone 9 has 33 passing tests in the execution environment; it is not yet merged.
 
 ## 1. Project objective
 
@@ -84,6 +87,8 @@ The workbook currently contains four worksheets:
   workbooks and the real read-only workbook loader.
 - Schema tests: `tests/test_contact_schema.py`, covering both CLI modes and
   workbook closure after schema errors.
+- File-format tests: `tests/test_workbook_formats.py`, covering unsupported
+  extensions and invalid ZIP containers detected during workbook loading.
 
 Run tests from the repository root with the project virtual
 environment activated:
@@ -287,19 +292,37 @@ Local macOS validation and synchronization of the developer's local `main`
 have not been separately confirmed; the merge report alone is not test evidence.
 Malformed workbook and unsupported-file-format handling remain out of scope.
 
+**Milestone 9 — Implemented; review and merge pending**
+
+Added targeted handling around workbook loading for `InvalidFileException`
+(unsupported extensions) and `BadZipFile` (invalid Excel ZIP containers).
+Errors go to standard error with status 1, without raw exception details,
+configured paths, tracebacks, or query results. Existing valid query behavior,
+read-only loading, configuration, and dependencies are unchanged.
+
+Validation on November 12, 2026 in the execution environment:
+- Original 30-test baseline passed before changes.
+- All 33 tests passed with Python 3.12.14 and openpyxl 3.1.5.
+- Three new tests exercise both CLI modes with unsupported `.xls`, `.xlsb`,
+  and `.csv` files; empty/text `.xlsx` files; and a truncated workbook ZIP.
+- Cases verify status 1, exact error output, no path disclosure or results,
+  and byte-for-byte file preservation.
+- Tests use temporary synthetic files only; no personal workbook was accessed.
+- The project virtual environment uses installed runtime packages;
+  fresh dependency downloads were not revalidated.
+- Local macOS validation and merge remain pending.
+
+Deeper corruption within a valid ZIP archive and failures during row iteration
+remain outside this increment. No broad exception handler was introduced.
+
 ## 6. Next development tasks
 
-1. Review and merge this documentation-only status update.
-2. Synchronize local `main` after merging.
-3. Confirm local macOS validation if it has not already been performed.
-4. Review the current source and agree on one small increment before implementation.
-
-No next feature has been selected or started.
+1. Review the Milestone 9 pull request and run the 33-test suite locally.
+2. Merge after review and validation, then synchronize local `main`.
+3. Record confirmed merge and local validation evidence in this context.
+4. Agree on the next small increment before implementing it.
 
 Complete and validate each increment before starting the next.
-Include focused automated tests with behavior changes and record
-validation results in this context.
-
 Keep personal workbook data and local configuration out of Git.
 
 ## 7. Longer-term roadmap
@@ -345,21 +368,15 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–8 are completed and merged into `main`.
-All 30 automated tests passed in the execution environment before the
-Milestone 8 merge. Local macOS validation and local synchronization have
-not been separately confirmed. See Section 5 for the validation evidence.
+Milestones 1–8 and the Milestone 8 status update (PR #9) are merged into `main`.
+Milestone 9 is implemented on `fix/workbook-format-errors` and awaits review,
+local macOS validation, and merge. All 33 tests passed in the execution
+environment on November 12, 2026. See Section 5 for validation evidence.
 
 Workbook access remains read-only. Both exact-date and `--due-through`
 queries retain their existing behavior for valid worksheets.
 
-This documentation-only update on `docs/milestone-8-status` records the
-confirmed merge and changes only `PROJECT_CONTEXT.md`.
-
-**Next immediate task:** Review and merge this status update, then synchronize
-local `main`. Agree on the next small increment before implementing it.
-
-Continue making small, independently testable changes and validate
-each increment before proceeding.
+**Next immediate task:** Review and validate Milestone 9 before merging.
+No subsequent increment has been selected or started.
 
 Do not introduce MCP, agents, or additional infrastructure yet.

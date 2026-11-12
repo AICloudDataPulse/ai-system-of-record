@@ -3,6 +3,8 @@ import argparse
 from pathlib import Path
 from datetime import datetime, date
 from openpyxl import load_workbook
+from openpyxl.utils.exceptions import InvalidFileException
+from zipfile import BadZipFile
 import os
 import sys
 
@@ -75,6 +77,19 @@ def main(*, include_earlier=False):
             read_only=True,
             data_only=True,
         )
+    except InvalidFileException:
+        print(
+            "Unsupported workbook format. Use an Excel .xlsx workbook.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    except BadZipFile:
+        print(
+            "Workbook is not a valid Excel ZIP file. "
+            "Check the file or restore a valid backup.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
     except FileNotFoundError:
         print(
             "Workbook not found. Check NETWORKING_WORKBOOK.",
