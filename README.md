@@ -99,8 +99,8 @@ Results follow worksheet order. No matches produces `Total follow-ups: 0`
 and is a successful query.
 
 Invalid date input, missing/empty configuration, invalid worksheet/header
-structure, and handled file-access failures print an error to standard error
-and exit with status 1.
+structure, unsupported formats, invalid ZIP containers, and handled file-access
+failures print an error to standard error and exit with status 1.
 Successful queries exit with status 0. To inspect the status in your shell,
 run `echo $?` immediately after the script.
 
@@ -111,6 +111,8 @@ run `echo $?` immediately after the script.
 | Missing `Contacts` worksheet | Use a worksheet named exactly `Contacts`. |
 | Missing header row | Put the required headers in the first row. |
 | Missing or duplicate required headers | Include each required header exactly once, with exact spelling and spacing. |
+| Unsupported workbook format | Select an Excel `.xlsx` workbook; renaming another format does not convert it. |
+| Workbook is not a valid Excel ZIP file | Check the selected file or restore a valid backup. |
 | Workbook not found | Verify that the configured file exists. |
 | Workbook cannot be read | Check file access permissions. |
 | Workbook could not be opened | Check that the path identifies an accessible Excel file. |
@@ -129,7 +131,7 @@ With the virtual environment active, run from the repository root:
 python -m unittest discover -s tests -v
 ```
 
-The current suite contains 30 tests and should finish with `OK`.
+The current suite contains 33 tests and should finish with `OK`.
 It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 
 - [tests/test_followups.py](tests/test_followups.py) covers date validation,
@@ -142,6 +144,9 @@ It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
   and header errors through both CLI modes, exact header matching, reordered
   and extra columns, header-only sheets, workbook preservation, and closure
   after schema errors.
+- [tests/test_workbook_formats.py](tests/test_workbook_formats.py) checks unsupported
+  extensions and invalid ZIP containers through both CLI modes, including empty,
+  text, and truncated files, safe error output, and unchanged file bytes.
 
 Temporary test workbooks are cleaned up automatically.
 
@@ -168,8 +173,10 @@ contact information, so use synthetic examples in shared logs and screenshots.
 - Queries support an exact due date or an inclusive due-through cutoff on
   `Contacts`; there are no bounded date ranges, completion-status filters,
   or queries against other worksheets.
-- Malformed workbooks and unsupported file formats do not yet have friendly
-  validation and may produce tracebacks.
+- Unsupported file extensions and invalid ZIP containers detected while opening
+  the workbook produce friendly errors. Deeper corruption inside a valid ZIP
+  archive (such as malformed XML or missing workbook components), and errors
+  during row iteration, remain outside this handling and may produce tracebacks.
 - Text dates are not parsed from workbook cells.
 - Formula cells use their stored cached values; the script does not calculate
   formulas. Missing or stale caches can affect query results.
