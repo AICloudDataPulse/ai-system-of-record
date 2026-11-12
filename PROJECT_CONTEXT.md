@@ -2,17 +2,16 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current development branch:** `fix/workbook-format-errors`
-**Active development:** Milestone 9 implemented; review, local validation, and merge pending.
+**Current documentation branch:** `docs/milestone-9-status`
+**Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–8 completed and merged into `main`.
-Milestone 8 merged through PR #8 on November 11, 2026.
-All 30 automated tests passed in the execution environment before merge.
+**Status:** Milestones 1–9 completed and merged into `main`.
+Milestone 9 merged through PR #10 on November 12, 2026.
+All 33 automated tests passed in the execution environment before merge.
 Local macOS validation has not been separately confirmed.
 The Milestone 7 status update was merged through PR #7 on November 10, 2026.
 The Milestone 8 status update was merged through PR #9 on November 11, 2026
 (commit `18d26ad5bf8f2888e943fece8da859a435d17f7b`).
-Milestone 9 has 33 passing tests in the execution environment; it is not yet merged.
 
 ## 1. Project objective
 
@@ -292,7 +291,7 @@ Local macOS validation and synchronization of the developer's local `main`
 have not been separately confirmed; the merge report alone is not test evidence.
 Malformed workbook and unsupported-file-format handling remain out of scope.
 
-**Milestone 9 — Implemented; review and merge pending**
+**Milestone 9 — Completed and merged**
 
 Added targeted handling around workbook loading for `InvalidFileException`
 (unsupported extensions) and `BadZipFile` (invalid Excel ZIP containers).
@@ -310,17 +309,27 @@ Validation on November 12, 2026 in the execution environment:
 - Tests use temporary synthetic files only; no personal workbook was accessed.
 - The project virtual environment uses installed runtime packages;
   fresh dependency downloads were not revalidated.
-- Local macOS validation and merge remain pending.
+- Local macOS validation has not been separately confirmed.
+
+Merged into `main` through [PR #10](https://github.com/AICloudDataPulse/ai-system-of-record/pull/10)
+on November 12, 2026
+(merge commit `aa3b1e3d0b0e7a6001320465fc3a9fe6594e8803`).
+The developer reported review and merge; GitHub confirmed the merge and
+`main` at this commit. The merged tree matches the version that passed all
+33 tests. Local macOS validation and synchronization of the developer's
+local `main` have not been separately confirmed.
 
 Deeper corruption within a valid ZIP archive and failures during row iteration
 remain outside this increment. No broad exception handler was introduced.
 
 ## 6. Next development tasks
 
-1. Review the Milestone 9 pull request and run the 33-test suite locally.
-2. Merge after review and validation, then synchronize local `main`.
-3. Record confirmed merge and local validation evidence in this context.
-4. Agree on the next small increment before implementing it.
+1. Review and merge this documentation-only status update.
+2. Synchronize local `main` after merging.
+3. Confirm local macOS validation of the 33-test suite if not already performed.
+4. Review the current source and agree on one small increment before implementation.
+
+No next feature has been selected or started.
 
 Complete and validate each increment before starting the next.
 Keep personal workbook data and local configuration out of Git.
@@ -368,15 +377,19 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–8 and the Milestone 8 status update (PR #9) are merged into `main`.
-Milestone 9 is implemented on `fix/workbook-format-errors` and awaits review,
-local macOS validation, and merge. All 33 tests passed in the execution
-environment on November 12, 2026. See Section 5 for validation evidence.
+Milestones 1–9 are completed and merged into `main`.
+All 33 tests passed in the execution environment on November 12, 2026.
+The merged tree matches the tested version. Local macOS validation and local
+synchronization have not been separately confirmed. See Section 5 for evidence.
 
 Workbook access remains read-only. Both exact-date and `--due-through`
 queries retain their existing behavior for valid worksheets.
 
-**Next immediate task:** Review and validate Milestone 9 before merging.
+This documentation-only update on `docs/milestone-9-status` records the
+confirmed merge and changes only `PROJECT_CONTEXT.md`.
+
+**Next immediate task:** Review and merge this status update, then synchronize
+local `main`. Agree on the next small increment before implementing it.
 No subsequent increment has been selected or started.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
