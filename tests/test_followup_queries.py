@@ -148,7 +148,47 @@ class FollowupQueryTests(unittest.TestCase):
         self.assertIn("unrecognized arguments", result.stderr)
         self.assertNotIn("Total follow-ups", result.stdout)
 
+    def test_date_argument_matches_interactive_results_and_preserves_workbook(self):
+        original = self.workbook_path.read_bytes()
+        for arguments, include_earlier in [([], False), (["--due-through"], True)]:
+            for value in ["2026-11-08", " 2026-11-08 ", "2024-02-29"]:
+                with self.subTest(arguments=arguments, value=value):
+                    # Blank stdin ensures an accidental prompt cannot succeed.
+                    result = self.run_cli([*arguments, "--date", value], "")
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertEqual(result.stderr, "")
+                    self.assertEqual(
+                        result.stdout,
+                        self.run_query(value, include_earlier=include_earlier),
+                    )
+                    self.assertEqual(self.workbook_path.read_bytes(), original)
+
+    def test_date_argument_rejects_invalid_dates_without_prompt(self):
+        original = self.workbook_path.read_bytes()
+        for arguments in [[], ["--due-through"]]:
+            for value in ["", "   ", "2026-02-30", "2026-02-29",
+                          "20261107", "2026-1-7", "11/07/2026"]:
+                with self.subTest(arguments=arguments, value=value):
+                    result = self.run_cli([*arguments, "--date", value], "")
+                    self.assertEqual(result.returncode, 1)
+                    self.assertEqual(result.stdout, "")
+                    self.assertEqual(
+                        result.stderr,
+                        "Invalid date. Enter a valid date in YYYY-MM-DD format.\n",
+                    )
+                    self.assertEqual(self.workbook_path.read_bytes(), original)
+
+    def test_date_argument_requires_value(self):
+        for arguments in [["--date"], ["--date", "--due-through"]]:
+            with self.subTest(arguments=arguments):
+                result = self.run_cli(arguments, "")
+                self.assertEqual(result.returncode, 2)
+                self.assertEqual(result.stdout, "")
+                self.assertIn("expected one argument", result.stderr)
+                self.assertNotIn("Traceback", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
+
 

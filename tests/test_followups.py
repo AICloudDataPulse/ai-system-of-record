@@ -80,6 +80,24 @@ class WorkbookConfigurationTests(unittest.TestCase):
                 Path(workbook_path),
             )
 
+
+class DateArgumentValidationTests(unittest.TestCase):
+    def test_invalid_explicit_date_fails_before_configuration_or_workbook_access(self):
+        for include_earlier in [False, True]:
+            with (
+                self.subTest(include_earlier=include_earlier),
+                patch("builtins.input") as prompt,
+                patch("networking.followups.get_workbook_path") as configuration,
+                patch("networking.followups.load_workbook") as loader,
+                patch("sys.stderr", new_callable=StringIO),
+            ):
+                with self.assertRaises(SystemExit) as raised:
+                    main(date_value="", include_earlier=include_earlier)
+                self.assertEqual(raised.exception.code, 1)
+                prompt.assert_not_called()
+                configuration.assert_not_called()
+                loader.assert_not_called()
+
 class WorkbookFileErrorTests(unittest.TestCase):
     def check_file_error(self, error, expected_message):
         with (

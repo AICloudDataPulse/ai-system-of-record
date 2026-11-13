@@ -2,10 +2,13 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-9-status`
-**Active feature development:** None; next increment not yet agreed.
+**Active development branch:** `feature/followup-date-argument`
+**Active feature development:** Milestone 10 — optional command-line date; implemented, pending review and merge.
 **Development environment:** macOS, VS Code, Python 3.12.3
 **Status:** Milestones 1–9 completed and merged into `main`.
+Milestone 10 is implemented on the feature branch; review and merge are pending.
+The Milestone 9 status update was merged through PR #11 on November 12, 2026
+(commit `4e13620bf295591c7a4cb46eeefc1af21dd5d593`).
 Milestone 9 merged through PR #10 on November 12, 2026.
 All 33 automated tests passed in the execution environment before merge.
 Local macOS validation has not been separately confirmed.
@@ -59,7 +62,8 @@ The script:
 1. Opens the local Excel workbook in read-only mode.
 2. Validates the `Contacts` worksheet and its required first-row headers,
    then reads its records.
-3. Accepts a date in `YYYY-MM-DD` format.
+3. Accepts a date in `YYYY-MM-DD` format, through `--date` or the existing
+   interactive prompt when the option is omitted.
 4. Matches records using the `Follow-up Due` column: exact date by default,
    or on/before the entered date with `--due-through`.
 5. Prints contact name, company, and next action.
@@ -322,14 +326,33 @@ local `main` have not been separately confirmed.
 Deeper corruption within a valid ZIP archive and failures during row iteration
 remain outside this increment. No broad exception handler was introduced.
 
+**Milestone 10 — Implemented; review and merge pending**
+
+Added optional `--date YYYY-MM-DD` to both exact-date and `--due-through` queries.
+Omitting the option retains the interactive prompt. Both paths reuse
+`parse_followup_date()`. An explicit empty/invalid date exits with status 1
+before configuration lookup or workbook access; a missing argument value exits
+with argparse usage status 2. Output fields, ordering, and read-only access remain
+unchanged. No dependencies or infrastructure were added.
+
+Validation on November 13, 2026 in the execution environment:
+- Original 33-test baseline passed before changes.
+- All 37 tests passed with Python 3.12.14 and openpyxl 3.1.5.
+- Four additional tests cover explicit dates in both modes, identical results
+  without prompting, surrounding whitespace, leap days, invalid/empty dates,
+  missing option values, validation before workbook access, and unchanged bytes.
+- Existing interactive CLI and workbook error tests continue to pass.
+- Synthetic temporary workbooks only; no personal workbook accessed.
+- The project virtual environment uses installed runtime packages; pinned
+  requirements were satisfied, but fresh dependency downloads were not tested.
+- Local macOS validation and merge remain pending.
+
 ## 6. Next development tasks
 
-1. Review and merge this documentation-only status update.
-2. Synchronize local `main` after merging.
-3. Confirm local macOS validation of the 33-test suite if not already performed.
-4. Review the current source and agree on one small increment before implementation.
-
-No next feature has been selected or started.
+1. Review the Milestone 10 pull request and validate locally on macOS.
+2. Merge after successful review and validation, then synchronize local `main`.
+3. Record the confirmed merge and validation evidence in this document.
+4. Agree on the next small increment before further implementation.
 
 Complete and validate each increment before starting the next.
 Keep personal workbook data and local configuration out of Git.
@@ -377,19 +400,15 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–9 are completed and merged into `main`.
-All 33 tests passed in the execution environment on November 12, 2026.
-The merged tree matches the tested version. Local macOS validation and local
-synchronization have not been separately confirmed. See Section 5 for evidence.
+Milestones 1–9 are completed and merged into `main`, including the Milestone 9
+status update through PR #11. Milestone 10 is implemented on
+`feature/followup-date-argument` and awaits review, local macOS validation,
+and merge. All 37 tests passed in the execution environment on November 13, 2026.
 
-Workbook access remains read-only. Both exact-date and `--due-through`
-queries retain their existing behavior for valid worksheets.
+Workbook access remains read-only. Exact-date and `--due-through` queries now
+accept an optional explicit `--date`; omitting it retains interactive input.
 
-This documentation-only update on `docs/milestone-9-status` records the
-confirmed merge and changes only `PROJECT_CONTEXT.md`.
-
-**Next immediate task:** Review and merge this status update, then synchronize
-local `main`. Agree on the next small increment before implementing it.
+**Next immediate task:** Review and validate the Milestone 10 pull request.
 No subsequent increment has been selected or started.
 
 Do not introduce MCP, agents, or additional infrastructure yet.

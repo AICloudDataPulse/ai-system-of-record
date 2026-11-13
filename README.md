@@ -91,6 +91,18 @@ only the entered date. Both modes skip blank and non-date cells and compare
 date-time values by calendar date. The cutoff is always entered explicitly;
 the script does not use today's date.
 
+To supply the date without an interactive prompt, use `--date` with either mode:
+
+```bash
+python networking/followups.py --date 2026-11-13
+python networking/followups.py --date 2026-11-13 --due-through
+```
+
+Omitting `--date` preserves the interactive prompt. Both input methods use the
+same date validation, including surrounding whitespace and leap-day checks.
+An invalid date exits with status 1 before workbook access; `--date` without
+a value is a command-line usage error and exits with status 2.
+
 This mode filters due dates only; it does not check whether an action has
 already been completed. Use `python networking/followups.py --help` for help.
 Unknown command-line options exit with status 2 before prompting for a date.
@@ -131,15 +143,17 @@ With the virtual environment active, run from the repository root:
 python -m unittest discover -s tests -v
 ```
 
-The current suite contains 33 tests and should finish with `OK`.
+The current suite contains 37 tests and should finish with `OK`.
 It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 
 - [tests/test_followups.py](tests/test_followups.py) covers date validation,
-  configuration, and simulated file-access failures.
+  configuration, explicit-date validation before workbook access, and simulated
+  file-access failures.
 - [tests/test_followup_queries.py](tests/test_followup_queries.py) creates
   temporary synthetic workbooks and checks matching output, exclusions,
   zero matches, byte-for-byte workbook preservation, and the command-line
-  behavior of both query modes.
+  behavior of both query modes, including explicit dates, missing argument
+  values, and unchanged interactive input.
 - [tests/test_contact_schema.py](tests/test_contact_schema.py) checks worksheet
   and header errors through both CLI modes, exact header matching, reordered
   and extra columns, header-only sheets, workbook preservation, and closure
@@ -196,4 +210,5 @@ and broader governance safeguards. These are roadmap items, not current features
 
 See [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for architectural decisions,
 milestone evidence, and the current stopping point.
+
 
