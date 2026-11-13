@@ -53,11 +53,11 @@ def get_workbook_path():
 
     return Path(value)
 
-def main(*, include_earlier=False):
+def main(*, include_earlier=False, date_value=None):
     try:
-        target_date = parse_followup_date(
-            input("Enter follow-up date (YYYY-MM-DD): ")
-        )
+        if date_value is None:
+            date_value = input("Enter follow-up date (YYYY-MM-DD): ")
+        target_date = parse_followup_date(date_value)
     except ValueError:
         print(
             "Invalid date. Enter a valid date in YYYY-MM-DD format.",
@@ -142,10 +142,16 @@ def main(*, include_earlier=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Query contact follow-up dates.")
     parser.add_argument(
+        "--date",
+        metavar="YYYY-MM-DD",
+        help="supply the follow-up date without an interactive prompt",
+    )
+    parser.add_argument(
         "--due-through",
         action="store_true",
         help="include follow-ups due on or before the entered date",
     )
     args = parser.parse_args()
-    main(include_earlier=args.due_through)
+    main(include_earlier=args.due_through, date_value=args.date)
+
 
