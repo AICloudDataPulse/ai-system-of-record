@@ -2,16 +2,16 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Active development branch:** `feature/followup-date-argument`
-**Active feature development:** Milestone 10 — optional command-line date; implemented, pending review and merge.
+**Current documentation branch:** `docs/milestone-10-status`
+**Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–9 completed and merged into `main`.
-Milestone 10 is implemented on the feature branch; review and merge are pending.
+**Status:** Milestones 1–10 completed and merged into `main`.
+Milestone 10 merged through PR #12 on November 13, 2026.
+All 37 automated tests passed in the execution environment before merge.
+Local macOS validation and synchronization have not been separately confirmed.
 The Milestone 9 status update was merged through PR #11 on November 12, 2026
 (commit `4e13620bf295591c7a4cb46eeefc1af21dd5d593`).
 Milestone 9 merged through PR #10 on November 12, 2026.
-All 33 automated tests passed in the execution environment before merge.
-Local macOS validation has not been separately confirmed.
 The Milestone 7 status update was merged through PR #7 on November 10, 2026.
 The Milestone 8 status update was merged through PR #9 on November 11, 2026
 (commit `18d26ad5bf8f2888e943fece8da859a435d17f7b`).
@@ -326,7 +326,7 @@ local `main` have not been separately confirmed.
 Deeper corruption within a valid ZIP archive and failures during row iteration
 remain outside this increment. No broad exception handler was introduced.
 
-**Milestone 10 — Implemented; review and merge pending**
+**Milestone 10 — Completed and merged**
 
 Added optional `--date YYYY-MM-DD` to both exact-date and `--due-through` queries.
 Omitting the option retains the interactive prompt. Both paths reuse
@@ -345,14 +345,25 @@ Validation on November 13, 2026 in the execution environment:
 - Synthetic temporary workbooks only; no personal workbook accessed.
 - The project virtual environment uses installed runtime packages; pinned
   requirements were satisfied, but fresh dependency downloads were not tested.
-- Local macOS validation and merge remain pending.
+- Local macOS validation has not been separately confirmed.
+
+Merged into `main` through [PR #12](https://github.com/AICloudDataPulse/ai-system-of-record/pull/12)
+on November 13, 2026
+(merge commit `ed6646920d4375c559dd173ddc2af19ac50d2e48`).
+The developer reported review and merge; GitHub confirmed PR #12 is merged
+and `main` points to this commit at verification time. The merged tree
+(`0a8f4ae1f89151464aac65c3292fc1cc904cec8b`) matches the tested version.
+Local macOS validation and synchronization of the developer's local `main`
+have not been separately confirmed.
 
 ## 6. Next development tasks
 
-1. Review the Milestone 10 pull request and validate locally on macOS.
-2. Merge after successful review and validation, then synchronize local `main`.
-3. Record the confirmed merge and validation evidence in this document.
-4. Agree on the next small increment before further implementation.
+1. Review and merge this documentation-only status update.
+2. Synchronize local `main` after merging.
+3. Confirm local macOS validation of the 37-test suite if not already performed.
+4. Review the current source and agree on one small increment before implementation.
+
+No next feature has been selected or started.
 
 Complete and validate each increment before starting the next.
 Keep personal workbook data and local configuration out of Git.
@@ -400,15 +411,19 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–9 are completed and merged into `main`, including the Milestone 9
-status update through PR #11. Milestone 10 is implemented on
-`feature/followup-date-argument` and awaits review, local macOS validation,
-and merge. All 37 tests passed in the execution environment on November 13, 2026.
+Milestones 1–10 are completed and merged into `main`.
+All 37 tests passed in the execution environment on November 13, 2026.
+The merged tree matches the tested version. Local macOS validation and local
+synchronization have not been separately confirmed. See Section 5 for evidence.
 
 Workbook access remains read-only. Exact-date and `--due-through` queries now
 accept an optional explicit `--date`; omitting it retains interactive input.
 
-**Next immediate task:** Review and validate the Milestone 10 pull request.
+This documentation-only update on `docs/milestone-10-status` records the
+confirmed merge and changes only `PROJECT_CONTEXT.md`.
+
+**Next immediate task:** Review and merge this status update, then synchronize
+local `main`. Agree on the next small increment before implementing it.
 No subsequent increment has been selected or started.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
