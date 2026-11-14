@@ -12,14 +12,19 @@ import sys
 REQUIRED_HEADERS = ("Name", "Company", "Next Action", "Follow-up Due")
 
 
+class ContactSchemaError(ValueError):
+    """The Contacts worksheet or its required headers are invalid."""
+
+
 def get_contact_rows_and_columns(workbook):
     if "Contacts" not in workbook.sheetnames:
-        raise ValueError("Workbook is missing the 'Contacts' worksheet.")
+        raise ContactSchemaError("Workbook is missing the 'Contacts' worksheet.")
 
     rows = workbook["Contacts"].iter_rows(values_only=True)
     headers = next(rows, ())
     if not any(value is not None for value in headers):
-        raise ValueError("The 'Contacts' worksheet is missing its header row.")
+        rows.close()
+        raise ContactSchemaError("The 'Contacts' worksheet is missing its header row.")
 
     missing = [name for name in REQUIRED_HEADERS if name not in headers]
     duplicates = [name for name in REQUIRED_HEADERS if headers.count(name) > 1]
@@ -29,7 +34,8 @@ def get_contact_rows_and_columns(workbook):
     if duplicates:
         errors.append("Duplicate required headers: " + ", ".join(duplicates) + ".")
     if errors:
-        raise ValueError("Invalid 'Contacts' header row. " + " ".join(errors))
+        rows.close()
+        raise ContactSchemaError("Invalid 'Contacts' header row. " + " ".join(errors))
 
     return rows, {name: headers.index(name) for name in REQUIRED_HEADERS}
 
@@ -54,6 +60,29 @@ def iter_followups(rows, columns, target_date, *, include_earlier=False):
                 "company": row[columns["Company"]],
                 "next_action": row[columns["Next Action"]],
             }
+
+
+def query_followups(workbook_path, target_date, *, include_earlier=False):
+    """Return matching contact dictionaries and close the workbook.
+
+    Accept an explicit workbook path and a validated datetime.date value.
+    Preserve cell values and worksheet order. No prompts, configuration
+    lookup, console output, or process exits occur here. File/format errors,
+    ContactSchemaError, and unexpected query errors propagate to the caller.
+    """
+    workbook = load_workbook(workbook_path, read_only=True, data_only=True)
+    rows = None
+    try:
+        rows, columns = get_contact_rows_and_columns(workbook)
+        return list(iter_followups(
+            rows, columns, target_date, include_earlier=include_earlier,
+        ))
+    finally:
+        try:
+            if rows is not None:
+                rows.close()
+        finally:
+            workbook.close()
 
 
 def parse_followup_date(value):
@@ -99,11 +128,12 @@ def main(*, include_earlier=False, date_value=None, json_output=False):
         sys.exit(1)
 
     try:
-        workbook = load_workbook(
-            workbook_path,
-            read_only=True,
-            data_only=True,
+        contacts = query_followups(
+            workbook_path, target_date, include_earlier=include_earlier,
         )
+    except ContactSchemaError as error:
+        print(error, file=sys.stderr)
+        sys.exit(1)
     except InvalidFileException:
         print(
             "Unsupported workbook format. Use an Excel .xlsx workbook.",
@@ -137,40 +167,22 @@ def main(*, include_earlier=False, date_value=None, json_output=False):
         )
         sys.exit(1)
 
-    try:
-        try:
-            rows, columns = get_contact_rows_and_columns(workbook)
-        except ValueError as error:
-            print(error, file=sys.stderr)
-            sys.exit(1)
+    if json_output:
+        # Display fields have a stable string-or-null JSON contract.
+        contacts = [
+            {key: None if value is None else str(value)
+             for key, value in contact.items()}
+            for contact in contacts
+        ]
+        print(json.dumps({"contacts": contacts, "total": len(contacts)}))
+        return
 
-        if json_output:
-            # Display fields have a stable string-or-null JSON contract.
-            # Build the complete response before writing anything to stdout.
-            contacts = [
-                {key: None if value is None else str(value)
-                 for key, value in contact.items()}
-                for contact in iter_followups(
-                    rows, columns, target_date, include_earlier=include_earlier
-                )
-            ]
-            print(json.dumps({"contacts": contacts, "total": len(contacts)}))
-            return
+    for contact in contacts:
+        print(f"\nName: {contact['name']}")
+        print(f"Company: {contact['company']}")
+        print(f"Next Action: {contact['next_action']}")
 
-        count = 0
-
-        for contact in iter_followups(
-            rows, columns, target_date, include_earlier=include_earlier
-        ):
-            count += 1
-            print(f"\nName: {contact['name']}")
-            print(f"Company: {contact['company']}")
-            print(f"Next Action: {contact['next_action']}")
-
-        print(f"\nTotal follow-ups: {count}")
-
-    finally:
-        workbook.close()
+    print(f"\nTotal follow-ups: {len(contacts)}")
 
 
 if __name__ == "__main__":

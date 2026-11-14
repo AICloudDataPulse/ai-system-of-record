@@ -170,7 +170,7 @@ With the virtual environment active, run from the repository root:
 python -m unittest discover -s tests -v
 ```
 
-The current suite contains 47 tests and should finish with `OK`.
+The current suite contains 54 tests and should finish with `OK`.
 It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 
 - [tests/test_followups.py](tests/test_followups.py) covers date validation,
@@ -187,6 +187,9 @@ It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 - [tests/test_followup_json.py](tests/test_followup_json.py) checks JSON in both
   modes, special characters, nulls, display-value conversion, empty results,
   required explicit dates, error output, and workbook preservation.
+- [tests/test_workbook_query.py](tests/test_workbook_query.py) checks the reusable
+  query, native cell values, workbook closure on success and failure, error
+  propagation, empty results, no console/configuration interaction, and unchanged bytes.
 - [tests/test_contact_schema.py](tests/test_contact_schema.py) checks worksheet
   and header errors through both CLI modes, exact header matching, reordered
   and extra columns, header-only sheets, workbook preservation, and closure
@@ -199,15 +202,42 @@ Temporary test workbooks are cleaned up automatically.
 
 ## Current architecture and data protection
 
-[networking/followups.py](networking/followups.py) validates the entered date,
-reads the workbook path from the environment, and opens the workbook through
-`openpyxl` with `read_only=True` and `data_only=True`. It locates the required
-columns by their headers and passes the validated rows, column indexes, and date
-to `iter_followups()`. This function yields dictionaries containing `name`,
-`company`, and `next_action` in worksheet order, without console I/O.
-The caller must keep the workbook open while consuming the iterator.
-`main()` prints matching records and a count and closes the workbook in a
-`finally` block.
+`main()` in [networking/followups.py](networking/followups.py) validates the
+entered date, reads configuration, calls `query_followups()`, and formats the
+returned records as text or JSON. It retains CLI error reporting and exit codes.
+
+`query_followups(workbook_path, target_date, *, include_earlier=False)` accepts
+an explicit path and a validated `datetime.date`. It opens the workbook with
+`read_only=True` and `data_only=True`, validates the worksheet/headers, and
+collects the records selected by `iter_followups()`. Cleanup closes the row iterator and workbook before returning or propagating
+an error after a successful open. Schema validation also closes its row
+iterator before raising a known header error.
+
+The returned list contains `name`, `company`, and `next_action` dictionaries,
+preserving worksheet order and native cell values (including None). JSON
+string/null conversion belongs to the CLI. The reusable query performs no
+prompting, environment lookup, printing, or process exits. Invalid worksheet
+structure raises `ContactSchemaError`, a `ValueError` subclass; file/format
+and unexpected errors propagate to the caller.
+
+Example from Python, run from the repository root:
+
+```python
+from datetime import date
+from pathlib import Path
+from networking.followups import query_followups
+
+contacts = query_followups(
+    Path("/absolute/path/to/Networking.xlsx"),
+    date(2026, 11, 14),
+    include_earlier=True,
+)
+```
+
+Both CLI formats now collect matching records before printing, using memory
+proportional to the matching results. Query failures produce no partial
+contact output. The lower-level `iter_followups()` remains available; callers
+using it directly must keep their workbook open while consuming the iterator.
 
 The local workbook is the authoritative working record. OneDrive is used for
 backup and recovery, not continuous synchronization managed by this tool.
@@ -224,10 +254,10 @@ contact information, so use synthetic examples in shared logs and screenshots.
 - Queries support an exact due date or an inclusive due-through cutoff on
   `Contacts`; there are no bounded date ranges, completion-status filters,
   or queries against other worksheets.
-- Unsupported file extensions and invalid ZIP containers detected while opening
-  the workbook produce friendly errors. Deeper corruption inside a valid ZIP
-  archive (such as malformed XML or missing workbook components), and errors
-  during row iteration, remain outside this handling and may produce tracebacks.
+- The CLI handles ContactSchemaError, InvalidFileException, BadZipFile, and
+  OSError subclasses raised by the query, using its existing error messages.
+  Other failures, including malformed XML or missing workbook components,
+  may still produce tracebacks. No broad exception handler is used.
 - Text dates are not parsed from workbook cells.
 - Formula cells use their stored cached values; the script does not calculate
   formulas. Missing or stale caches can affect query results.
