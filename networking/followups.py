@@ -1,5 +1,6 @@
 
 import argparse
+import json
 from pathlib import Path
 from datetime import datetime, date
 from openpyxl import load_workbook
@@ -75,7 +76,11 @@ def get_workbook_path():
 
     return Path(value)
 
-def main(*, include_earlier=False, date_value=None):
+def main(*, include_earlier=False, date_value=None, json_output=False):
+    if json_output and date_value is None:
+        print("--json requires --date.", file=sys.stderr)
+        sys.exit(2)
+
     try:
         if date_value is None:
             date_value = input("Enter follow-up date (YYYY-MM-DD): ")
@@ -139,6 +144,19 @@ def main(*, include_earlier=False, date_value=None):
             print(error, file=sys.stderr)
             sys.exit(1)
 
+        if json_output:
+            # Display fields have a stable string-or-null JSON contract.
+            # Build the complete response before writing anything to stdout.
+            contacts = [
+                {key: None if value is None else str(value)
+                 for key, value in contact.items()}
+                for contact in iter_followups(
+                    rows, columns, target_date, include_earlier=include_earlier
+                )
+            ]
+            print(json.dumps({"contacts": contacts, "total": len(contacts)}))
+            return
+
         count = 0
 
         for contact in iter_followups(
@@ -167,8 +185,18 @@ if __name__ == "__main__":
         action="store_true",
         help="include follow-ups due on or before the entered date",
     )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="print JSON instead of text (requires --date)",
+    )
     args = parser.parse_args()
-    main(include_earlier=args.due_through, date_value=args.date)
+    if args.json and args.date is None:
+        parser.error("--json requires --date")
+    main(
+        include_earlier=args.due_through, date_value=args.date,
+        json_output=args.json,
+    )
 
 
 

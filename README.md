@@ -103,6 +103,33 @@ same date validation, including surrounding whitespace and leap-day checks.
 An invalid date exits with status 1 before workbook access; `--date` without
 a value is a command-line usage error and exits with status 2.
 
+For machine-readable output, add `--json` with an explicit `--date`:
+
+```bash
+python networking/followups.py --date 2026-11-14 --due-through --json
+```
+
+Successful output is one JSON object on standard output, with no prompt or
+text summary. For example:
+
+```json
+{"contacts": [{"name": "Alex Example", "company": "Example Labs", "next_action": "Send update"}], "total": 1}
+```
+
+The keys are `contacts` and `total`; each contact contains only `name`,
+`company`, and `next_action`, in worksheet order. Blank cells become JSON
+`null`; all other display values become strings using Python's `str()`,
+matching their text-mode representation. Unicode and special characters are
+JSON-escaped and round-trip when parsed. Zero matches returns
+`{"contacts": [], "total": 0}`.
+
+`--json` without `--date` exits with usage status 2 before prompting or opening
+the workbook. Handled date, configuration, workbook, and schema errors retain
+status 1 and plain-text messages on standard error; standard output is empty.
+Consumers should check the exit status before parsing output. JSON mode
+collects matching contacts in memory before emitting the response.
+Omitting `--json` retains the existing text output and interactive behavior.
+
 This mode filters due dates only; it does not check whether an action has
 already been completed. Use `python networking/followups.py --help` for help.
 Unknown command-line options exit with status 2 before prompting for a date.
@@ -143,7 +170,7 @@ With the virtual environment active, run from the repository root:
 python -m unittest discover -s tests -v
 ```
 
-The current suite contains 41 tests and should finish with `OK`.
+The current suite contains 47 tests and should finish with `OK`.
 It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 
 - [tests/test_followups.py](tests/test_followups.py) covers date validation,
@@ -157,6 +184,9 @@ It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 - [tests/test_followup_selection.py](tests/test_followup_selection.py) checks returned
   records, both date modes, worksheet order, skipped non-dates, empty results,
   reordered columns, and selection without console I/O.
+- [tests/test_followup_json.py](tests/test_followup_json.py) checks JSON in both
+  modes, special characters, nulls, display-value conversion, empty results,
+  required explicit dates, error output, and workbook preservation.
 - [tests/test_contact_schema.py](tests/test_contact_schema.py) checks worksheet
   and header errors through both CLI modes, exact header matching, reordered
   and extra columns, header-only sheets, workbook preservation, and closure
