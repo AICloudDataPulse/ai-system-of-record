@@ -2,12 +2,15 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Active development branch:** `feature/query-input-validation`
-**Active feature development:** Milestone 14 query input validation; implemented, pending review and merge.
+**Current documentation branch:** `docs/milestone-14-status`
+**Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–13 completed and merged into `main`.
-Milestone 14 is implemented on the feature branch; all 56 tests passed in the
-execution environment on November 14, 2026. Review and merge are pending.
+**Status:** Milestones 1–14 completed and merged into `main`.
+Milestone 14 merged through PR #19 on November 14, 2026
+(commit `8d971e87cef452c88d93ad10476647babb600d5a`).
+The merged tree matches the version that passed all 56 tests with resource
+warnings enabled and no warnings. Local macOS validation and synchronization
+remain unconfirmed.
 The Milestone 13 status update merged through PR #18
 (commit `01b555bdcb1de19d94e532bbe60124be4fb2d815`).
 Milestone 13 merged through PR #17 on November 14, 2026
@@ -501,7 +504,7 @@ and `main` points to this commit at verification time. The merged tree
 (`44031adffe8f4e3ec93fbac0fb98607bd3ba6ac9`) matches the tested version.
 Local macOS validation and synchronization have not been separately confirmed.
 
-**Milestone 14 — Implemented; pending review and merge**
+**Milestone 14 — Completed and merged**
 
 Added explicit type checks at the start of `query_followups()`:
 - `target_date` must be a datetime.date and must not be a datetime.datetime.
@@ -524,13 +527,21 @@ Validation on November 14, 2026 in the execution environment:
 - Synthetic data only; no personal workbook accessed.
 - Fresh dependency downloads and local macOS validation were not performed.
 
+Merged through [PR #19](https://github.com/AICloudDataPulse/ai-system-of-record/pull/19)
+on November 14, 2026 (commit `8d971e87cef452c88d93ad10476647babb600d5a`).
+The developer reported review and merge; GitHub confirmed PR #19 is merged
+and `main` points to this commit at verification time. The merged tree
+(`00bfb08108ae555ead055dbdba8d77d883a8a889`) matches the tested version.
+Local macOS validation and synchronization have not been separately confirmed.
+
 ## 6. Next development tasks
 
-1. Review the Milestone 14 pull request and validate locally on macOS.
-2. Merge the feature branch after review and successful validation.
-3. Synchronize local `main` and record the confirmed merge.
+1. Review and merge this documentation-only status update.
+2. Synchronize local `main` after merging.
+3. Confirm local macOS validation of the 56-test suite if not already performed.
 4. Agree on the next small increment before implementation.
 
+No next feature has been selected or started.
 Complete and validate each increment before starting the next.
 Keep personal workbook data and local configuration out of Git.
 
@@ -577,16 +588,20 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–13 and the Milestone 13 status update (PR #18) are merged.
-Milestone 14 is implemented on `feature/query-input-validation`, pending
-review and merge. All 56 tests passed with resource warnings enabled and no
-warnings in the execution environment on November 14, 2026.
-Local macOS validation remains unconfirmed.
+Milestones 1–14 are completed and merged into `main`.
+All 56 tests passed in the execution environment on November 14, 2026,
+with resource warnings enabled and no warnings. The merged tree matches the
+tested version. Local macOS validation and synchronization have not been
+separately confirmed. See Section 5 for evidence.
 
 Workbook access remains read-only. The reusable query rejects invalid date
 and flag types before workbook access. The CLI retains its existing behavior.
-No next increment has been selected.
 
-**Next immediate task:** Review and validate the Milestone 14 PR before merge.
+This documentation-only update on `docs/milestone-14-status` records the
+confirmed merge and changes only `PROJECT_CONTEXT.md`.
+
+**Next immediate task:** Review and merge this status update, then synchronize
+local `main`. Agree on the next small increment before implementing it.
+No subsequent increment has been selected or started.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
