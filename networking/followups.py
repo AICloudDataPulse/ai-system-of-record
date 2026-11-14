@@ -41,7 +41,7 @@ def get_contact_rows_and_columns(workbook):
 
 
 def iter_followups(rows, columns, target_date, *, include_earlier=False):
-    """Yield name/company/next_action dictionaries in worksheet order.
+    """Yield contact dictionaries including a calendar-date followup_due.
 
     Accept rows and column indexes from get_contact_rows_and_columns() and
     a validated date. The caller owns the workbook and must keep it open
@@ -59,6 +59,7 @@ def iter_followups(rows, columns, target_date, *, include_earlier=False):
                 "name": row[columns["Name"]],
                 "company": row[columns["Company"]],
                 "next_action": row[columns["Next Action"]],
+                "followup_due": due,
             }
 
 
@@ -68,7 +69,8 @@ def query_followups(workbook_path, target_date, *, include_earlier=False):
     Accept an explicit workbook path, a datetime.date (not datetime.datetime),
     and a Boolean include_earlier. Invalid argument types raise TypeError
     before workbook access; values are not coerced.
-    Preserve cell values and worksheet order. No prompts, configuration
+    Preserve display cell values and worksheet order; normalize followup_due
+    to a calendar date. No prompts, configuration
     lookup, console output, or process exits occur here. File/format errors,
     ContactSchemaError, and unexpected query errors propagate to the caller.
     """
@@ -175,10 +177,13 @@ def main(*, include_earlier=False, date_value=None, json_output=False):
         sys.exit(1)
 
     if json_output:
-        # Display fields have a stable string-or-null JSON contract.
+        # Display fields are strings/null; due dates use ISO calendar dates.
         contacts = [
-            {key: None if value is None else str(value)
-             for key, value in contact.items()}
+            {
+                **{key: None if contact[key] is None else str(contact[key])
+                   for key in ("name", "company", "next_action")},
+                "followup_due": contact["followup_due"].isoformat(),
+            }
             for contact in contacts
         ]
         print(json.dumps({"contacts": contacts, "total": len(contacts)}))
@@ -188,6 +193,7 @@ def main(*, include_earlier=False, date_value=None, json_output=False):
         print(f"\nName: {contact['name']}")
         print(f"Company: {contact['company']}")
         print(f"Next Action: {contact['next_action']}")
+        print(f"Follow-up Due: {contact['followup_due'].isoformat()}")
 
     print(f"\nTotal follow-ups: {len(contacts)}")
 

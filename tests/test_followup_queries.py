@@ -66,9 +66,9 @@ class FollowupQueryTests(unittest.TestCase):
         self.assertEqual(
             output,
             "\nName: Alex Example\nCompany: Example Labs\n"
-            "Next Action: Send an update\n"
+            "Next Action: Send an update\nFollow-up Due: 2026-11-07\n"
             "\nName: Sam Sample\nCompany: Sample Systems\n"
-            "Next Action: Arrange a meeting\n"
+            "Next Action: Arrange a meeting\nFollow-up Due: 2026-11-07\n"
             "\nTotal follow-ups: 2\n",
         )
 
@@ -99,6 +99,11 @@ class FollowupQueryTests(unittest.TestCase):
         ])
         self.assertIn("Company: Sample Systems\nNext Action: Arrange a meeting", output)
         self.assertIn("Total follow-ups: 3\n", output)
+        due_lines = [line for line in output.splitlines() if line.startswith("Follow-up Due:")]
+        self.assertEqual(due_lines, [
+            "Follow-up Due: 2026-11-07", "Follow-up Due: 2026-11-07",
+            "Follow-up Due: 2026-11-08",
+        ])
 
     def test_due_through_excludes_later_blank_and_text_dates(self):
         output = self.run_query("2026-11-07", include_earlier=True)
