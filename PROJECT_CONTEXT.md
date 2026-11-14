@@ -2,12 +2,15 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Active development branch:** `feature/workbook-query-function`
-**Active feature development:** Milestone 13 reusable workbook query; implemented, pending review and merge.
+**Current documentation branch:** `docs/milestone-13-status`
+**Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–12 completed and merged into `main`.
-Milestone 13 is implemented on the feature branch; all 54 tests passed in the
-execution environment on November 14, 2026. Review and merge are pending.
+**Status:** Milestones 1–13 completed and merged into `main`.
+Milestone 13 merged through PR #17 on November 14, 2026
+(commit `149a4d7ca323272a1422dcac6fcefdb22d2c3a54`).
+The merged tree matches the version that passed all 54 tests with resource
+warnings enabled and no warnings. Local macOS validation and synchronization
+remain unconfirmed.
 The Milestone 12 status update merged through PR #16
 (commit `c257a8e3ac62e6f332251f48ba030da55d519f00`).
 Milestone 12 merged through PR #15 on November 14, 2026
@@ -453,7 +456,7 @@ and `main` points to this commit at verification time. The merged tree
 (`bce45a2ec959c50c2b8b309283bd2063f34e2302`) matches the tested version.
 Local macOS validation and synchronization have not been separately confirmed.
 
-**Milestone 13 — Implemented; pending review and merge**
+**Milestone 13 — Completed and merged**
 
 Added `query_followups()` in the existing module to own the read-only workbook
 lifecycle and return selected contact dictionaries. `main()` calls it and
@@ -483,13 +486,21 @@ The CLI's specific schema/file/format handlers now surround the complete
 query. Other corruption/iteration exceptions remain unhandled; no broad
 exception catch was added.
 
+Merged through [PR #17](https://github.com/AICloudDataPulse/ai-system-of-record/pull/17)
+on November 14, 2026 (commit `149a4d7ca323272a1422dcac6fcefdb22d2c3a54`).
+The developer reported review and merge; GitHub confirmed PR #17 is merged
+and `main` points to this commit at verification time. The merged tree
+(`44031adffe8f4e3ec93fbac0fb98607bd3ba6ac9`) matches the tested version.
+Local macOS validation and synchronization have not been separately confirmed.
+
 ## 6. Next development tasks
 
-1. Review the Milestone 13 pull request and validate locally on macOS.
-2. Merge the feature branch after review and successful validation.
-3. Synchronize local `main` and record the confirmed merge.
+1. Review and merge this documentation-only status update.
+2. Synchronize local `main` after merging.
+3. Confirm local macOS validation of the 54-test suite if not already performed.
 4. Agree on the next small increment before implementation.
 
+No next feature has been selected or started.
 Complete and validate each increment before starting the next.
 Keep personal workbook data and local configuration out of Git.
 
@@ -536,15 +547,21 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–12 and the Milestone 12 status update (PR #16) are merged.
-Milestone 13 is implemented on `feature/workbook-query-function`, pending
-review and merge. All 54 tests passed in the execution environment on
-November 14, 2026; local macOS validation remains unconfirmed.
+Milestones 1–13 are completed and merged into `main`.
+All 54 tests passed in the execution environment on November 14, 2026,
+with resource warnings enabled and no warnings. The merged tree matches the
+tested version. Local macOS validation and synchronization have not been
+separately confirmed. See Section 5 for evidence.
 
 Workbook access remains read-only. A reusable query owns loading, validation,
-selection, and closure. The CLI retains input, configuration, errors, and
-text/JSON formatting. No next increment has been selected.
+selection, and resource cleanup. The CLI retains input, configuration, errors,
+and text/JSON formatting.
 
-**Next immediate task:** Review and validate the Milestone 13 PR before merge.
+This documentation-only update on `docs/milestone-13-status` records the
+confirmed merge and changes only `PROJECT_CONTEXT.md`.
+
+**Next immediate task:** Review and merge this status update, then synchronize
+local `main`. Agree on the next small increment before implementing it.
+No subsequent increment has been selected or started.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
