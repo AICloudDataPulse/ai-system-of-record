@@ -2,10 +2,14 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-10-status`
-**Active feature development:** None; next increment not yet agreed.
+**Active development branch:** `feature/extract-followup-query`
+**Active feature development:** Milestone 11 query extraction; implemented, pending review and merge.
 **Development environment:** macOS, VS Code, Python 3.12.3
 **Status:** Milestones 1–10 completed and merged into `main`.
+Milestone 11 is implemented on the feature branch; all 41 tests passed in the
+execution environment on November 14, 2026. Review and merge are pending.
+The Milestone 10 status update merged through PR #13 on November 13, 2026
+(commit `aa3a4a834dafee75eb19d9d928162f3fa9d4be2f`).
 Milestone 10 merged through PR #12 on November 13, 2026.
 All 37 automated tests passed in the execution environment before merge.
 Local macOS validation and synchronization have not been separately confirmed.
@@ -76,6 +80,13 @@ The workbook currently contains four worksheets:
 - Applications
 - Interviews
 
+Query selection is isolated in `iter_followups(rows, columns, target_date,
+include_earlier=False)` (the last argument is keyword-only). It yields
+dictionaries with `name`, `company`, and `next_action`, preserving worksheet
+order and cell values. It uses validated rows/columns and a validated date,
+performs no console I/O, and requires the caller to keep the workbook open
+while consuming the iterator. `main()` retains workbook lifecycle and CLI output.
+
 ### Date validation and testing
 
 - `parse_followup_date()` validates calendar dates and requires
@@ -88,6 +99,8 @@ The workbook currently contains four worksheets:
 - Validation tests: `tests/test_followups.py`.
 - Query tests: `tests/test_followup_queries.py`, using temporary synthetic
   workbooks and the real read-only workbook loader.
+- Selection tests: `tests/test_followup_selection.py`, covering returned records
+  independently of console formatting.
 - Schema tests: `tests/test_contact_schema.py`, covering both CLI modes and
   workbook closure after schema errors.
 - File-format tests: `tests/test_workbook_formats.py`, covering unsupported
@@ -356,14 +369,32 @@ and `main` points to this commit at verification time. The merged tree
 Local macOS validation and synchronization of the developer's local `main`
 have not been separately confirmed.
 
+**Milestone 11 — Implemented; pending review and merge**
+
+Extracted follow-up selection into `iter_followups()` in the existing module.
+The CLI consumes its records while retaining input, configuration, workbook
+ownership, error reporting, output formatting, and totals. Exact-date and
+due-through matching, date-time normalization, skipped non-date cells, and
+worksheet ordering remain unchanged. No dependencies or infrastructure added.
+
+Validation on November 14, 2026 in the execution environment:
+- Original 37-test baseline passed before changes.
+- All 41 tests passed with Python 3.12.14 and openpyxl 3.1.5.
+- Four new selection tests cover projected records, no console I/O, both modes,
+  inclusive boundaries, worksheet order, blank/text/numeric date exclusions,
+  empty inputs/results, reordered columns, and exclusion of extra fields.
+- Existing CLI, error-handling, schema, and byte-preservation tests passed.
+- Synthetic data only; no personal workbook accessed.
+- Installed runtime packages satisfy pinned requirements (including et_xmlfile
+  2.0.0); fresh dependency downloads were not revalidated.
+- Local macOS validation and synchronization have not been confirmed.
+
 ## 6. Next development tasks
 
-1. Review and merge this documentation-only status update.
-2. Synchronize local `main` after merging.
-3. Confirm local macOS validation of the 37-test suite if not already performed.
-4. Review the current source and agree on one small increment before implementation.
-
-No next feature has been selected or started.
+1. Review the Milestone 11 pull request and validate locally on macOS.
+2. Merge the feature branch after review and successful validation.
+3. Synchronize local `main` and record the confirmed merge.
+4. Agree on the next small increment before implementation.
 
 Complete and validate each increment before starting the next.
 Keep personal workbook data and local configuration out of Git.
@@ -411,19 +442,15 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–10 are completed and merged into `main`.
-All 37 tests passed in the execution environment on November 13, 2026.
-The merged tree matches the tested version. Local macOS validation and local
-synchronization have not been separately confirmed. See Section 5 for evidence.
+Milestones 1–10 and the Milestone 10 status update (PR #13) are merged.
+Milestone 11 is implemented on `feature/extract-followup-query`, pending
+review and merge. All 41 automated tests passed in the execution environment
+on November 14, 2026; local macOS validation remains unconfirmed.
 
-Workbook access remains read-only. Exact-date and `--due-through` queries now
-accept an optional explicit `--date`; omitting it retains interactive input.
+Workbook access remains read-only. The CLI uses the extracted selection
+function with unchanged query behavior and output. No next increment has
+been selected.
 
-This documentation-only update on `docs/milestone-10-status` records the
-confirmed merge and changes only `PROJECT_CONTEXT.md`.
-
-**Next immediate task:** Review and merge this status update, then synchronize
-local `main`. Agree on the next small increment before implementing it.
-No subsequent increment has been selected or started.
+**Next immediate task:** Review and validate the Milestone 11 PR before merge.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
