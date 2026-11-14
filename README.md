@@ -143,7 +143,7 @@ With the virtual environment active, run from the repository root:
 python -m unittest discover -s tests -v
 ```
 
-The current suite contains 37 tests and should finish with `OK`.
+The current suite contains 41 tests and should finish with `OK`.
 It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 
 - [tests/test_followups.py](tests/test_followups.py) covers date validation,
@@ -154,6 +154,9 @@ It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
   zero matches, byte-for-byte workbook preservation, and the command-line
   behavior of both query modes, including explicit dates, missing argument
   values, and unchanged interactive input.
+- [tests/test_followup_selection.py](tests/test_followup_selection.py) checks returned
+  records, both date modes, worksheet order, skipped non-dates, empty results,
+  reordered columns, and selection without console I/O.
 - [tests/test_contact_schema.py](tests/test_contact_schema.py) checks worksheet
   and header errors through both CLI modes, exact header matching, reordered
   and extra columns, header-only sheets, workbook preservation, and closure
@@ -169,8 +172,12 @@ Temporary test workbooks are cleaned up automatically.
 [networking/followups.py](networking/followups.py) validates the entered date,
 reads the workbook path from the environment, and opens the workbook through
 `openpyxl` with `read_only=True` and `data_only=True`. It locates the required
-columns by their headers, scans the rows, prints matching records and a count,
-and closes the workbook in a `finally` block.
+columns by their headers and passes the validated rows, column indexes, and date
+to `iter_followups()`. This function yields dictionaries containing `name`,
+`company`, and `next_action` in worksheet order, without console I/O.
+The caller must keep the workbook open while consuming the iterator.
+`main()` prints matching records and a count and closes the workbook in a
+`finally` block.
 
 The local workbook is the authoritative working record. OneDrive is used for
 backup and recovery, not continuous synchronization managed by this tool.
@@ -210,5 +217,6 @@ and broader governance safeguards. These are roadmap items, not current features
 
 See [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for architectural decisions,
 milestone evidence, and the current stopping point.
+
 
 

@@ -33,6 +33,28 @@ def get_contact_rows_and_columns(workbook):
     return rows, {name: headers.index(name) for name in REQUIRED_HEADERS}
 
 
+def iter_followups(rows, columns, target_date, *, include_earlier=False):
+    """Yield name/company/next_action dictionaries in worksheet order.
+
+    Accept rows and column indexes from get_contact_rows_and_columns() and
+    a validated date. The caller owns the workbook and must keep it open
+    while consuming this iterator. This function performs no console I/O.
+    """
+    for row in rows:
+        due = row[columns["Follow-up Due"]]
+        if isinstance(due, datetime):
+            due = due.date()
+
+        if isinstance(due, date) and (
+            due <= target_date if include_earlier else due == target_date
+        ):
+            yield {
+                "name": row[columns["Name"]],
+                "company": row[columns["Company"]],
+                "next_action": row[columns["Next Action"]],
+            }
+
+
 def parse_followup_date(value):
     value = value.strip()
     parsed_date = date.fromisoformat(value)
@@ -119,19 +141,13 @@ def main(*, include_earlier=False, date_value=None):
 
         count = 0
 
-        for row in rows:
-            due = row[columns["Follow-up Due"]]
-
-            if isinstance(due, datetime):
-                due = due.date()
-
-            if isinstance(due, date) and (
-                due <= target_date if include_earlier else due == target_date
-            ):
-                count += 1
-                print(f"\nName: {row[columns['Name']]}")
-                print(f"Company: {row[columns['Company']]}")
-                print(f"Next Action: {row[columns['Next Action']]}")
+        for contact in iter_followups(
+            rows, columns, target_date, include_earlier=include_earlier
+        ):
+            count += 1
+            print(f"\nName: {contact['name']}")
+            print(f"Company: {contact['company']}")
+            print(f"Next Action: {contact['next_action']}")
 
         print(f"\nTotal follow-ups: {count}")
 
@@ -153,5 +169,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     main(include_earlier=args.due_through, date_value=args.date)
+
 
 
