@@ -2,11 +2,14 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Active development branch:** `feature/extract-followup-query`
-**Active feature development:** Milestone 11 query extraction; implemented, pending review and merge.
+**Active development branch:** `feature/followup-json-output`
+**Active feature development:** Milestone 12 optional JSON output; implemented, pending review and merge.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–10 completed and merged into `main`.
-Milestone 11 is implemented on the feature branch; all 41 tests passed in the
+**Status:** Milestones 1–11 completed and merged into `main`.
+Milestone 11 merged through PR #14 on November 14, 2026
+(commit `0cdee44d16ea27ef3729497699aa03d7e085cd61`).
+The merged tree matches the version that passed all 41 tests.
+Milestone 12 is implemented on the feature branch; all 47 tests passed in the
 execution environment on November 14, 2026. Review and merge are pending.
 The Milestone 10 status update merged through PR #13 on November 13, 2026
 (commit `aa3a4a834dafee75eb19d9d928162f3fa9d4be2f`).
@@ -72,6 +75,11 @@ The script:
    or on/before the entered date with `--due-through`.
 5. Prints contact name, company, and next action.
 6. Reports the number of matching contacts.
+7. With `--json --date YYYY-MM-DD`, prints a JSON object containing `contacts`
+   and `total`, without a prompt or text summary. Display fields are strings
+   or null for blank cells. JSON mode collects matching records in memory.
+   Omitting `--date` with `--json` is a usage error (status 2). Handled errors
+   leave stdout empty and retain plain-text stderr messages and status 1.
 
 The workbook currently contains four worksheets:
 
@@ -101,6 +109,8 @@ while consuming the iterator. `main()` retains workbook lifecycle and CLI output
   workbooks and the real read-only workbook loader.
 - Selection tests: `tests/test_followup_selection.py`, covering returned records
   independently of console formatting.
+- JSON tests: `tests/test_followup_json.py`, covering the output contract,
+  both modes, validation, errors, and workbook preservation.
 - Schema tests: `tests/test_contact_schema.py`, covering both CLI modes and
   workbook closure after schema errors.
 - File-format tests: `tests/test_workbook_formats.py`, covering unsupported
@@ -369,7 +379,7 @@ and `main` points to this commit at verification time. The merged tree
 Local macOS validation and synchronization of the developer's local `main`
 have not been separately confirmed.
 
-**Milestone 11 — Implemented; pending review and merge**
+**Milestone 11 — Completed and merged**
 
 Extracted follow-up selection into `iter_followups()` in the existing module.
 The CLI consumes its records while retaining input, configuration, workbook
@@ -389,9 +399,39 @@ Validation on November 14, 2026 in the execution environment:
   2.0.0); fresh dependency downloads were not revalidated.
 - Local macOS validation and synchronization have not been confirmed.
 
+Merged through [PR #14](https://github.com/AICloudDataPulse/ai-system-of-record/pull/14)
+on November 14, 2026 (commit `0cdee44d16ea27ef3729497699aa03d7e085cd61`).
+The developer reported review and merge; GitHub confirmed the merge. The merged
+tree (`f7942503b4c6efaf73950d7fefd4f7b35395f272`) matches the tested version.
+Local macOS validation and synchronization remain unconfirmed.
+
+**Milestone 12 — Implemented; pending review and merge**
+
+Added optional `--json` requiring explicit `--date`. Both date-query modes
+reuse `iter_followups()`. Successful stdout contains only one JSON object:
+`contacts` is an array of name/company/next_action objects and `total` is
+its count. Blank display cells become null and other display values become
+strings. Zero matches returns an empty array and total 0. Existing text-mode
+behavior and read-only access remain unchanged. Only the standard-library
+json module is added; dependencies and infrastructure are unchanged.
+
+Validation on November 14, 2026 in the execution environment:
+- Original 41-test baseline passed before changes.
+- All 47 tests passed with Python 3.12.14 and openpyxl 3.1.5.
+- Six JSON tests cover both modes, order/count, Unicode/quotes/backslashes/
+  newlines, nulls, other display cell types, empty results, required explicit
+  date before input/configuration/access, invalid dates, configuration/file/
+  schema errors, empty stdout on handled failures, and unchanged workbook bytes.
+- Existing text CLI and query/schema/file tests continue to pass.
+- Synthetic data only; no personal workbook accessed.
+- Installed runtime packages satisfy pinned requirements; fresh dependency
+  downloads and local macOS validation were not revalidated.
+- JSON mode buffers matching records. Deeper corruption and row-iteration
+  failures remain outside the existing friendly error handling.
+
 ## 6. Next development tasks
 
-1. Review the Milestone 11 pull request and validate locally on macOS.
+1. Review the Milestone 12 pull request and validate locally on macOS.
 2. Merge the feature branch after review and successful validation.
 3. Synchronize local `main` and record the confirmed merge.
 4. Agree on the next small increment before implementation.
@@ -442,15 +482,14 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–10 and the Milestone 10 status update (PR #13) are merged.
-Milestone 11 is implemented on `feature/extract-followup-query`, pending
-review and merge. All 41 automated tests passed in the execution environment
-on November 14, 2026; local macOS validation remains unconfirmed.
+Milestones 1–11 are merged, including PR #14.
+Milestone 12 is implemented on `feature/followup-json-output`, pending
+review and merge. All 47 tests passed in the execution environment on
+November 14, 2026; local macOS validation remains unconfirmed.
 
-Workbook access remains read-only. The CLI uses the extracted selection
-function with unchanged query behavior and output. No next increment has
-been selected.
+Workbook access remains read-only. Optional JSON output requires an explicit
+date; existing text behavior is preserved. No next increment has been selected.
 
-**Next immediate task:** Review and validate the Milestone 11 PR before merge.
+**Next immediate task:** Review and validate the Milestone 12 PR before merge.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
