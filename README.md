@@ -75,6 +75,7 @@ Enter follow-up date (YYYY-MM-DD): 2026-11-07
 Name: Alex Example
 Company: Example Labs
 Next Action: Send an update
+Follow-up Due: 2026-11-07
 
 Total follow-ups: 1
 ```
@@ -113,13 +114,15 @@ Successful output is one JSON object on standard output, with no prompt or
 text summary. For example:
 
 ```json
-{"contacts": [{"name": "Alex Example", "company": "Example Labs", "next_action": "Send update"}], "total": 1}
+{"contacts": [{"name": "Alex Example", "company": "Example Labs", "next_action": "Send update", "followup_due": "2026-11-14"}], "total": 1}
 ```
 
-The keys are `contacts` and `total`; each contact contains only `name`,
-`company`, and `next_action`, in worksheet order. Blank cells become JSON
-`null`; all other display values become strings using Python's `str()`,
-matching their text-mode representation. Unicode and special characters are
+The keys are `contacts` and `total`; each contact contains `name`,
+`company`, `next_action`, and `followup_due`, in worksheet order.
+The due date is always a `YYYY-MM-DD` string; Excel date-times use their
+calendar date without a time component. For the three display fields, blank
+cells become JSON `null` and other values become strings using Python's
+`str()`, matching their text-mode representation. Unicode and special characters are
 JSON-escaped and round-trip when parsed. Zero matches returns
 `{"contacts": [], "total": 0}`.
 
@@ -133,6 +136,11 @@ Omitting `--json` retains the existing text output and interactive behavior.
 This mode filters due dates only; it does not check whether an action has
 already been completed. Use `python networking/followups.py --help` for help.
 Unknown command-line options exit with status 2 before prompting for a date.
+
+Each text record includes `Follow-up Due: YYYY-MM-DD` after Next Action.
+This is an additive output-contract change: Python/JSON records now have a
+fourth field, and text output has an extra line. Consumers that validate
+exact keys or line counts must account for it.
 
 Results follow worksheet order. No matches produces `Total follow-ups: 0`
 and is a successful query.
@@ -170,7 +178,7 @@ With the virtual environment active, run from the repository root:
 python -m unittest discover -s tests -v
 ```
 
-The current suite contains 56 tests and should finish with `OK`.
+The current suite contains 57 tests and should finish with `OK`.
 It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 
 - [tests/test_followups.py](tests/test_followups.py) covers date validation,
@@ -183,7 +191,8 @@ It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
   values, and unchanged interactive input.
 - [tests/test_followup_selection.py](tests/test_followup_selection.py) checks returned
   records, both date modes, worksheet order, skipped non-dates, empty results,
-  reordered columns, and selection without console I/O.
+  reordered columns, calendar-date normalization (including leap day), and
+  selection without console I/O.
 - [tests/test_followup_json.py](tests/test_followup_json.py) checks JSON in both
   modes, special characters, nulls, display-value conversion, empty results,
   required explicit dates, error output, and workbook preservation.
@@ -219,9 +228,12 @@ collects the records selected by `iter_followups()`. Cleanup closes the row iter
 an error after a successful open. Schema validation also closes its row
 iterator before raising a known header error.
 
-The returned list contains `name`, `company`, and `next_action` dictionaries,
-preserving worksheet order and native cell values (including None). JSON
-string/null conversion belongs to the CLI. The reusable query performs no
+Each returned dictionary contains `name`, `company`, `next_action`, and
+`followup_due`, preserving worksheet order. The three display fields retain
+native cell values (including None); `followup_due` is a native
+`datetime.date`, with date-time cells normalized to their calendar date.
+The CLI formats due dates using `isoformat()` and converts display fields
+to strings/null for JSON. The reusable query performs no
 prompting, environment lookup, printing, or process exits. Invalid worksheet
 structure raises `ContactSchemaError`, a `ValueError` subclass; file/format
 and unexpected errors propagate to the caller.

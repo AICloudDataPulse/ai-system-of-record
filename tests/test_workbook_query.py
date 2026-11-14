@@ -45,10 +45,10 @@ class WorkbookQueryTests(unittest.TestCase):
 
     def test_returns_records_in_both_modes_and_closes_without_console_or_config(self):
         original = self.path.read_bytes()
-        first = {"name": "Boundary", "company": "Example Labs", "next_action": "Send update"}
+        first = {"name": "Boundary", "company": "Example Labs", "next_action": "Send update", "followup_due": date(2026, 11, 7)}
         for include_earlier, expected in [
             (False, [first]),
-            (True, [first, {"name": "Earlier", "company": None, "next_action": 123}]),
+            (True, [first, {"name": "Earlier", "company": None, "next_action": 123, "followup_due": date(2026, 11, 6)}]),
         ]:
             with self.subTest(include_earlier=include_earlier):
                 workbook = self.open_workbook()
@@ -70,6 +70,8 @@ class WorkbookQueryTests(unittest.TestCase):
                     self.assertEqual(stdout.getvalue(), "")
                     self.assertEqual(stderr.getvalue(), "")
                 self.assertIsInstance(records, list)
+                for record in records:
+                    self.assertIs(type(record["followup_due"]), date)
                 self.assertEqual(records, expected)
                 self.assertEqual(self.path.read_bytes(), original)
 

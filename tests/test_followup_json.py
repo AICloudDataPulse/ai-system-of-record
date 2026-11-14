@@ -3,7 +3,7 @@ import os
 import subprocess
 import sys
 import unittest
-from datetime import date
+from datetime import date, datetime
 from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -27,7 +27,7 @@ class FollowupJsonTests(unittest.TestCase):
             sheet = workbook.active
             sheet.title = title
             sheet.append(["Name", "Company", "Next Action", "Follow-up Due"])
-            sheet.append(['Zoë "Example"', "Example\\Labs", "Line 1\nLine 2", date(2026, 11, 7)])
+            sheet.append(['Zoë "Example"', "Example\\Labs", "Line 1\nLine 2", datetime(2026, 11, 7, 15, 30)])
             sheet.append(["Earlier", None, None, date(2026, 11, 6)])
             sheet.append(["Later", "Example", "Call", date(2026, 11, 8)])
             workbook.save(self.path)
@@ -46,10 +46,10 @@ class FollowupJsonTests(unittest.TestCase):
 
     def test_both_modes_return_only_json_and_preserve_workbook(self):
         original = self.path.read_bytes()
-        first = {"name": 'Zoë "Example"', "company": "Example\\Labs", "next_action": "Line 1\nLine 2"}
+        first = {"name": 'Zoë "Example"', "company": "Example\\Labs", "next_action": "Line 1\nLine 2", "followup_due": "2026-11-07"}
         for flags, expected in [
             ([], [first]),
-            (["--due-through"], [first, {"name": "Earlier", "company": None, "next_action": None}]),
+            (["--due-through"], [first, {"name": "Earlier", "company": None, "next_action": None, "followup_due": "2026-11-06"}]),
         ]:
             with self.subTest(flags=flags):
                 result = self.run_cli(["--date", "2026-11-07", "--json", *flags])
@@ -130,7 +130,7 @@ class FollowupJsonTests(unittest.TestCase):
         result = self.run_cli(["--json", "--date", "2026-11-07"])
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(json.loads(result.stdout), {
-            "contacts": [{"name": "123", "company": "True", "next_action": "2026-11-01 00:00:00"}],
+            "contacts": [{"name": "123", "company": "True", "next_action": "2026-11-01 00:00:00", "followup_due": "2026-11-07"}],
             "total": 1,
         })
 
