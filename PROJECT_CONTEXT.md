@@ -2,10 +2,14 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-12-status`
-**Active feature development:** None; next increment not yet agreed.
+**Active development branch:** `feature/workbook-query-function`
+**Active feature development:** Milestone 13 reusable workbook query; implemented, pending review and merge.
 **Development environment:** macOS, VS Code, Python 3.12.3
 **Status:** Milestones 1–12 completed and merged into `main`.
+Milestone 13 is implemented on the feature branch; all 54 tests passed in the
+execution environment on November 14, 2026. Review and merge are pending.
+The Milestone 12 status update merged through PR #16
+(commit `c257a8e3ac62e6f332251f48ba030da55d519f00`).
 Milestone 12 merged through PR #15 on November 14, 2026
 (commit `6e4f8fdebb5e6792abdfb684b0fd985e683b50ec`).
 The merged tree matches the version that passed all 47 tests in the execution
@@ -94,7 +98,17 @@ include_earlier=False)` (the last argument is keyword-only). It yields
 dictionaries with `name`, `company`, and `next_action`, preserving worksheet
 order and cell values. It uses validated rows/columns and a validated date,
 performs no console I/O, and requires the caller to keep the workbook open
-while consuming the iterator. `main()` retains workbook lifecycle and CLI output.
+while consuming the iterator.
+
+`query_followups(workbook_path, target_date, *, include_earlier=False)` owns
+read-only loading, schema validation, collection of selected records, and
+workbook closure. It returns a list with native cell values, raises exceptions,
+and performs no prompting, configuration lookup, printing, or process exits.
+The caller supplies a validated date. `ContactSchemaError` (a ValueError
+subclass) identifies known worksheet/header problems without catching unrelated
+ValueErrors as schema failures. `main()` retains configuration, input, error
+reporting, and text/JSON formatting. Both formats now buffer matching records
+and print only after the query has completed and the workbook is closed.
 
 ### Date validation and testing
 
@@ -112,6 +126,8 @@ while consuming the iterator. `main()` retains workbook lifecycle and CLI output
   independently of console formatting.
 - JSON tests: `tests/test_followup_json.py`, covering the output contract,
   both modes, validation, errors, and workbook preservation.
+- Workbook-query tests: `tests/test_workbook_query.py`, covering returned
+  values, lifecycle, exception propagation, and separation from CLI/configuration.
 - Schema tests: `tests/test_contact_schema.py`, covering both CLI modes and
   workbook closure after schema errors.
 - File-format tests: `tests/test_workbook_formats.py`, covering unsupported
@@ -437,14 +453,43 @@ and `main` points to this commit at verification time. The merged tree
 (`bce45a2ec959c50c2b8b309283bd2063f34e2302`) matches the tested version.
 Local macOS validation and synchronization have not been separately confirmed.
 
+**Milestone 13 — Implemented; pending review and merge**
+
+Added `query_followups()` in the existing module to own the read-only workbook
+lifecycle and return selected contact dictionaries. `main()` calls it and
+retains configuration, input, error reporting, and output formatting. Added
+`ContactSchemaError` to distinguish known schema failures from unexpected
+ValueErrors. No dependencies or infrastructure added.
+
+Validation on November 14, 2026 in the execution environment:
+- Original 47-test baseline passed before changes.
+- All 54 tests passed with Python 3.12.14 and openpyxl 3.1.5.
+- Seven new tests cover both modes, native returned values and order, read-only
+  loading, empty/header-only results, closure on success/schema/iteration
+  failures, unchanged bytes, file-error propagation, no console/configuration
+  interaction, explicit row-stream cleanup before workbook closure, and
+  unexpected ValueErrors remaining unhandled by the CLI.
+- Existing text/JSON CLI, schema, and file-error tests passed.
+- A resource warning during initial validation led to explicit row-iterator
+  closure on schema errors and in query cleanup. The final full-suite run
+  with ResourceWarning enabled passed without warnings.
+- Synthetic data only; no personal workbook accessed.
+- Installed runtime packages satisfy pinned requirements; fresh downloads
+  and local macOS validation were not performed.
+
+Both CLI formats now collect matches before printing, so memory use grows
+with matching records and failures produce no partial contact output.
+The CLI's specific schema/file/format handlers now surround the complete
+query. Other corruption/iteration exceptions remain unhandled; no broad
+exception catch was added.
+
 ## 6. Next development tasks
 
-1. Review and merge this documentation-only status update.
-2. Synchronize local `main` after merging.
-3. Confirm local macOS validation of the 47-test suite if not already performed.
+1. Review the Milestone 13 pull request and validate locally on macOS.
+2. Merge the feature branch after review and successful validation.
+3. Synchronize local `main` and record the confirmed merge.
 4. Agree on the next small increment before implementation.
 
-No next feature has been selected or started.
 Complete and validate each increment before starting the next.
 Keep personal workbook data and local configuration out of Git.
 
@@ -491,19 +536,15 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–12 are completed and merged into `main`.
-All 47 tests passed in the execution environment on November 14, 2026.
-The merged tree matches the tested version. Local macOS validation and
-synchronization have not been separately confirmed. See Section 5 for evidence.
+Milestones 1–12 and the Milestone 12 status update (PR #16) are merged.
+Milestone 13 is implemented on `feature/workbook-query-function`, pending
+review and merge. All 54 tests passed in the execution environment on
+November 14, 2026; local macOS validation remains unconfirmed.
 
-Workbook access remains read-only. Optional JSON output requires an explicit
-date; existing text behavior is preserved.
+Workbook access remains read-only. A reusable query owns loading, validation,
+selection, and closure. The CLI retains input, configuration, errors, and
+text/JSON formatting. No next increment has been selected.
 
-This documentation-only update on `docs/milestone-12-status` records the
-confirmed merge and changes only `PROJECT_CONTEXT.md`.
-
-**Next immediate task:** Review and merge this status update, then synchronize
-local `main`. Agree on the next small increment before implementing it.
-No subsequent increment has been selected or started.
+**Next immediate task:** Review and validate the Milestone 13 PR before merge.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
