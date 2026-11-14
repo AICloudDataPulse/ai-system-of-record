@@ -1,5 +1,5 @@
 import unittest
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -83,6 +83,45 @@ class WorkbookQueryTests(unittest.TestCase):
                         self.path, date(2026, 11, 5), include_earlier=include_earlier,
                     ), [])
                     self.assertEqual(self.path.read_bytes(), original)
+
+    def test_invalid_target_date_is_rejected_before_workbook_access(self):
+        invalid_values = (
+            "2026-11-07", None, 20261107, True, [], {},
+            datetime(2026, 11, 7),
+            datetime(2026, 11, 7, 15, 30, tzinfo=timezone.utc),
+        )
+        for value in invalid_values:
+            for include_earlier in (False, True):
+                with (
+                    self.subTest(value=value, include_earlier=include_earlier),
+                    patch("networking.followups.load_workbook") as loader,
+                    patch("sys.stdout", new_callable=StringIO) as stdout,
+                    patch("sys.stderr", new_callable=StringIO) as stderr,
+                ):
+                    with self.assertRaises(TypeError) as raised:
+                        query_followups(self.path, value, include_earlier=include_earlier)
+                    self.assertEqual(
+                        str(raised.exception),
+                        "target_date must be a datetime.date, not a datetime.datetime.",
+                    )
+                    loader.assert_not_called()
+                    self.assertEqual(stdout.getvalue(), "")
+                    self.assertEqual(stderr.getvalue(), "")
+
+    def test_non_boolean_include_earlier_is_rejected_before_workbook_access(self):
+        for value in (None, 0, 1, 0.0, 1.0, "", "false", "true", [], {}):
+            with (
+                self.subTest(value=value),
+                patch("networking.followups.load_workbook") as loader,
+                patch("sys.stdout", new_callable=StringIO) as stdout,
+                patch("sys.stderr", new_callable=StringIO) as stderr,
+            ):
+                with self.assertRaises(TypeError) as raised:
+                    query_followups(self.path, date(2026, 11, 7), include_earlier=value)
+                self.assertEqual(str(raised.exception), "include_earlier must be a bool.")
+                loader.assert_not_called()
+                self.assertEqual(stdout.getvalue(), "")
+                self.assertEqual(stderr.getvalue(), "")
 
     def test_schema_errors_propagate_and_close_workbook(self):
         for rows, title in [

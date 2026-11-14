@@ -170,7 +170,7 @@ With the virtual environment active, run from the repository root:
 python -m unittest discover -s tests -v
 ```
 
-The current suite contains 54 tests and should finish with `OK`.
+The current suite contains 56 tests and should finish with `OK`.
 It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 
 - [tests/test_followups.py](tests/test_followups.py) covers date validation,
@@ -189,7 +189,8 @@ It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
   required explicit dates, error output, and workbook preservation.
 - [tests/test_workbook_query.py](tests/test_workbook_query.py) checks the reusable
   query, native cell values, workbook closure on success and failure, error
-  propagation, empty results, no console/configuration interaction, and unchanged bytes.
+  propagation, empty results, no console/configuration interaction, unchanged bytes,
+  and rejection of invalid query argument types before workbook access.
 - [tests/test_contact_schema.py](tests/test_contact_schema.py) checks worksheet
   and header errors through both CLI modes, exact header matching, reordered
   and extra columns, header-only sheets, workbook preservation, and closure
@@ -207,7 +208,12 @@ entered date, reads configuration, calls `query_followups()`, and formats the
 returned records as text or JSON. It retains CLI error reporting and exit codes.
 
 `query_followups(workbook_path, target_date, *, include_earlier=False)` accepts
-an explicit path and a validated `datetime.date`. It opens the workbook with
+an explicit path, a `datetime.date` (excluding `datetime.datetime`), and a
+Boolean `include_earlier` (default `False`). Invalid date/flag types raise
+`TypeError` before opening the workbook. Strings are not parsed, datetimes
+are not truncated, and truthy/falsy values such as 1, 0, or "false" are not
+coerced to Booleans. The CLI continues to parse `--date` strings separately.
+The function opens the workbook with
 `read_only=True` and `data_only=True`, validates the worksheet/headers, and
 collects the records selected by `iter_followups()`. Cleanup closes the row iterator and workbook before returning or propagating
 an error after a successful open. Schema validation also closes its row

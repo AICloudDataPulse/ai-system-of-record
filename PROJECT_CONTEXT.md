@@ -2,10 +2,14 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-13-status`
-**Active feature development:** None; next increment not yet agreed.
+**Active development branch:** `feature/query-input-validation`
+**Active feature development:** Milestone 14 query input validation; implemented, pending review and merge.
 **Development environment:** macOS, VS Code, Python 3.12.3
 **Status:** Milestones 1–13 completed and merged into `main`.
+Milestone 14 is implemented on the feature branch; all 56 tests passed in the
+execution environment on November 14, 2026. Review and merge are pending.
+The Milestone 13 status update merged through PR #18
+(commit `01b555bdcb1de19d94e532bbe60124be4fb2d815`).
 Milestone 13 merged through PR #17 on November 14, 2026
 (commit `149a4d7ca323272a1422dcac6fcefdb22d2c3a54`).
 The merged tree matches the version that passed all 54 tests with resource
@@ -107,7 +111,10 @@ while consuming the iterator.
 read-only loading, schema validation, collection of selected records, and
 workbook closure. It returns a list with native cell values, raises exceptions,
 and performs no prompting, configuration lookup, printing, or process exits.
-The caller supplies a validated date. `ContactSchemaError` (a ValueError
+The query requires a `datetime.date` excluding `datetime.datetime` and a
+Boolean `include_earlier`. Invalid types raise TypeError before workbook
+access, without coercion. CLI date-string parsing remains separate.
+`ContactSchemaError` (a ValueError
 subclass) identifies known worksheet/header problems without catching unrelated
 ValueErrors as schema failures. `main()` retains configuration, input, error
 reporting, and text/JSON formatting. Both formats now buffer matching records
@@ -130,7 +137,8 @@ and print only after the query has completed and the workbook is closed.
 - JSON tests: `tests/test_followup_json.py`, covering the output contract,
   both modes, validation, errors, and workbook preservation.
 - Workbook-query tests: `tests/test_workbook_query.py`, covering returned
-  values, lifecycle, exception propagation, and separation from CLI/configuration.
+  values, lifecycle, exception propagation, separation from CLI/configuration,
+  and argument validation before workbook access.
 - Schema tests: `tests/test_contact_schema.py`, covering both CLI modes and
   workbook closure after schema errors.
 - File-format tests: `tests/test_workbook_formats.py`, covering unsupported
@@ -493,14 +501,36 @@ and `main` points to this commit at verification time. The merged tree
 (`44031adffe8f4e3ec93fbac0fb98607bd3ba6ac9`) matches the tested version.
 Local macOS validation and synchronization have not been separately confirmed.
 
+**Milestone 14 — Implemented; pending review and merge**
+
+Added explicit type checks at the start of `query_followups()`:
+- `target_date` must be a datetime.date and must not be a datetime.datetime.
+- `include_earlier` must be a bool.
+- Invalid arguments raise clear TypeErrors before load_workbook is called.
+- No coercion, date-string parsing, or workbook-path policy changes.
+- Valid query behavior, CLI formats, and read-only access are preserved.
+- No dependencies or infrastructure added.
+
+Validation on November 14, 2026 in the execution environment:
+- Original 54-test baseline passed before changes.
+- All 56 tests passed with ResourceWarning enabled and no warnings, using
+  Python 3.12.14 and openpyxl 3.1.5.
+- Two new tests cover strings, None, numeric/Boolean/container date inputs,
+  naive and timezone-aware datetimes, and non-Boolean flags including 0/1,
+  floats, strings, None, and containers.
+- Invalid-input cases assert TypeError messages, no workbook-loader call,
+  and empty stdout/stderr. Date rejection is exercised in both query modes.
+- Existing valid-date/Boolean queries and text/JSON CLI tests passed.
+- Synthetic data only; no personal workbook accessed.
+- Fresh dependency downloads and local macOS validation were not performed.
+
 ## 6. Next development tasks
 
-1. Review and merge this documentation-only status update.
-2. Synchronize local `main` after merging.
-3. Confirm local macOS validation of the 54-test suite if not already performed.
+1. Review the Milestone 14 pull request and validate locally on macOS.
+2. Merge the feature branch after review and successful validation.
+3. Synchronize local `main` and record the confirmed merge.
 4. Agree on the next small increment before implementation.
 
-No next feature has been selected or started.
 Complete and validate each increment before starting the next.
 Keep personal workbook data and local configuration out of Git.
 
@@ -547,21 +577,16 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–13 are completed and merged into `main`.
-All 54 tests passed in the execution environment on November 14, 2026,
-with resource warnings enabled and no warnings. The merged tree matches the
-tested version. Local macOS validation and synchronization have not been
-separately confirmed. See Section 5 for evidence.
+Milestones 1–13 and the Milestone 13 status update (PR #18) are merged.
+Milestone 14 is implemented on `feature/query-input-validation`, pending
+review and merge. All 56 tests passed with resource warnings enabled and no
+warnings in the execution environment on November 14, 2026.
+Local macOS validation remains unconfirmed.
 
-Workbook access remains read-only. A reusable query owns loading, validation,
-selection, and resource cleanup. The CLI retains input, configuration, errors,
-and text/JSON formatting.
+Workbook access remains read-only. The reusable query rejects invalid date
+and flag types before workbook access. The CLI retains its existing behavior.
+No next increment has been selected.
 
-This documentation-only update on `docs/milestone-13-status` records the
-confirmed merge and changes only `PROJECT_CONTEXT.md`.
-
-**Next immediate task:** Review and merge this status update, then synchronize
-local `main`. Agree on the next small increment before implementing it.
-No subsequent increment has been selected or started.
+**Next immediate task:** Review and validate the Milestone 14 PR before merge.
 
 Do not introduce MCP, agents, or additional infrastructure yet.

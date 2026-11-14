@@ -65,11 +65,18 @@ def iter_followups(rows, columns, target_date, *, include_earlier=False):
 def query_followups(workbook_path, target_date, *, include_earlier=False):
     """Return matching contact dictionaries and close the workbook.
 
-    Accept an explicit workbook path and a validated datetime.date value.
+    Accept an explicit workbook path, a datetime.date (not datetime.datetime),
+    and a Boolean include_earlier. Invalid argument types raise TypeError
+    before workbook access; values are not coerced.
     Preserve cell values and worksheet order. No prompts, configuration
     lookup, console output, or process exits occur here. File/format errors,
     ContactSchemaError, and unexpected query errors propagate to the caller.
     """
+    if not isinstance(target_date, date) or isinstance(target_date, datetime):
+        raise TypeError("target_date must be a datetime.date, not a datetime.datetime.")
+    if not isinstance(include_earlier, bool):
+        raise TypeError("include_earlier must be a bool.")
+
     workbook = load_workbook(workbook_path, read_only=True, data_only=True)
     rows = None
     try:
