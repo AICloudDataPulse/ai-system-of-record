@@ -2,12 +2,15 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Active development branch:** `feature/followup-due-output`
-**Active feature development:** Milestone 15 due dates in query output; implemented, pending review and merge.
+**Current documentation branch:** `docs/milestone-15-status`
+**Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–14 completed and merged into `main`.
-Milestone 15 is implemented on the feature branch; all 57 tests passed in the
-execution environment on November 14, 2026. Review and merge are pending.
+**Status:** Milestones 1–15 completed and merged into `main`.
+Milestone 15 merged through PR #21 on November 14, 2026
+(commit `93dd95ca395df4c9dfb604f59fc0b37b9824a4b6`).
+The merged tree matches the version that passed all 57 tests with resource
+warnings enabled and no warnings. Local macOS validation and synchronization
+remain unconfirmed.
 The Milestone 14 status update merged through PR #20
 (commit `db6541ec4ea19e3d54846d9a7d47a9bf0b3e63a1`).
 Milestone 14 merged through PR #19 on November 14, 2026
@@ -540,7 +543,7 @@ and `main` points to this commit at verification time. The merged tree
 (`00bfb08108ae555ead055dbdba8d77d883a8a889`) matches the tested version.
 Local macOS validation and synchronization have not been separately confirmed.
 
-**Milestone 15 — Implemented; pending review and merge**
+**Milestone 15 — Completed and merged**
 
 Added `followup_due` to records from `iter_followups()` and
 `query_followups()`. The Python value is a native date; Excel date-times
@@ -569,13 +572,21 @@ Validation on November 14, 2026 in the execution environment:
 - Synthetic data only; no personal workbook accessed.
 - Fresh dependency downloads and local macOS validation were not performed.
 
+Merged through [PR #21](https://github.com/AICloudDataPulse/ai-system-of-record/pull/21)
+on November 14, 2026 (commit `93dd95ca395df4c9dfb604f59fc0b37b9824a4b6`).
+The developer reported review and merge; GitHub confirmed PR #21 is merged
+and `main` points to this commit at verification time. The merged tree
+(`e3658a424cd2678815b38887d57675f31586b2ed`) matches the tested version.
+Local macOS validation and synchronization have not been separately confirmed.
+
 ## 6. Next development tasks
 
-1. Review the Milestone 15 pull request and validate locally on macOS.
-2. Merge the feature branch after review and successful validation.
-3. Synchronize local `main` and record the confirmed merge.
+1. Review and merge this documentation-only status update.
+2. Synchronize local `main` after merging.
+3. Confirm local macOS validation of the 57-test suite if not already performed.
 4. Agree on the next small increment before implementation.
 
+No next feature has been selected or started.
 Complete and validate each increment before starting the next.
 Keep personal workbook data and local configuration out of Git.
 
@@ -622,15 +633,20 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–14 and the Milestone 14 status update (PR #20) are merged.
-Milestone 15 is implemented on `feature/followup-due-output`, pending
-review and merge. All 57 tests passed with resource warnings enabled and no
-warnings in the execution environment on November 14, 2026.
-Local macOS validation remains unconfirmed.
+Milestones 1–15 are completed and merged into `main`.
+All 57 tests passed in the execution environment on November 14, 2026,
+with resource warnings enabled and no warnings. The merged tree matches the
+tested version. Local macOS validation and synchronization have not been
+separately confirmed. See Section 5 for evidence.
 
-Workbook access remains read-only. Results now include the follow-up due
-date in Python, text, and JSON output. No next increment has been selected.
+Workbook access remains read-only. Results include the follow-up due date
+as a native Python date and a YYYY-MM-DD value in text and JSON output.
 
-**Next immediate task:** Review and validate the Milestone 15 PR before merge.
+This documentation-only update on `docs/milestone-15-status` records the
+confirmed merge and changes only `PROJECT_CONTEXT.md`.
+
+**Next immediate task:** Review and merge this status update, then synchronize
+local `main`. Agree on the next small increment before implementing it.
+No subsequent increment has been selected or started.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
