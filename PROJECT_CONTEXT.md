@@ -2,15 +2,16 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Active development branch:** `feature/followup-json-output`
-**Active feature development:** Milestone 12 optional JSON output; implemented, pending review and merge.
+**Current documentation branch:** `docs/milestone-12-status`
+**Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–11 completed and merged into `main`.
+**Status:** Milestones 1–12 completed and merged into `main`.
+Milestone 12 merged through PR #15 on November 14, 2026
+(commit `6e4f8fdebb5e6792abdfb684b0fd985e683b50ec`).
+The merged tree matches the version that passed all 47 tests in the execution
+environment. Local macOS validation and synchronization remain unconfirmed.
 Milestone 11 merged through PR #14 on November 14, 2026
 (commit `0cdee44d16ea27ef3729497699aa03d7e085cd61`).
-The merged tree matches the version that passed all 41 tests.
-Milestone 12 is implemented on the feature branch; all 47 tests passed in the
-execution environment on November 14, 2026. Review and merge are pending.
 The Milestone 10 status update merged through PR #13 on November 13, 2026
 (commit `aa3a4a834dafee75eb19d9d928162f3fa9d4be2f`).
 Milestone 10 merged through PR #12 on November 13, 2026.
@@ -405,7 +406,7 @@ The developer reported review and merge; GitHub confirmed the merge. The merged
 tree (`f7942503b4c6efaf73950d7fefd4f7b35395f272`) matches the tested version.
 Local macOS validation and synchronization remain unconfirmed.
 
-**Milestone 12 — Implemented; pending review and merge**
+**Milestone 12 — Completed and merged**
 
 Added optional `--json` requiring explicit `--date`. Both date-query modes
 reuse `iter_followups()`. Successful stdout contains only one JSON object:
@@ -429,13 +430,21 @@ Validation on November 14, 2026 in the execution environment:
 - JSON mode buffers matching records. Deeper corruption and row-iteration
   failures remain outside the existing friendly error handling.
 
+Merged through [PR #15](https://github.com/AICloudDataPulse/ai-system-of-record/pull/15)
+on November 14, 2026 (commit `6e4f8fdebb5e6792abdfb684b0fd985e683b50ec`).
+The developer reported review and merge; GitHub confirmed PR #15 is merged
+and `main` points to this commit at verification time. The merged tree
+(`bce45a2ec959c50c2b8b309283bd2063f34e2302`) matches the tested version.
+Local macOS validation and synchronization have not been separately confirmed.
+
 ## 6. Next development tasks
 
-1. Review the Milestone 12 pull request and validate locally on macOS.
-2. Merge the feature branch after review and successful validation.
-3. Synchronize local `main` and record the confirmed merge.
+1. Review and merge this documentation-only status update.
+2. Synchronize local `main` after merging.
+3. Confirm local macOS validation of the 47-test suite if not already performed.
 4. Agree on the next small increment before implementation.
 
+No next feature has been selected or started.
 Complete and validate each increment before starting the next.
 Keep personal workbook data and local configuration out of Git.
 
@@ -482,14 +491,19 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–11 are merged, including PR #14.
-Milestone 12 is implemented on `feature/followup-json-output`, pending
-review and merge. All 47 tests passed in the execution environment on
-November 14, 2026; local macOS validation remains unconfirmed.
+Milestones 1–12 are completed and merged into `main`.
+All 47 tests passed in the execution environment on November 14, 2026.
+The merged tree matches the tested version. Local macOS validation and
+synchronization have not been separately confirmed. See Section 5 for evidence.
 
 Workbook access remains read-only. Optional JSON output requires an explicit
-date; existing text behavior is preserved. No next increment has been selected.
+date; existing text behavior is preserved.
 
-**Next immediate task:** Review and validate the Milestone 12 PR before merge.
+This documentation-only update on `docs/milestone-12-status` records the
+confirmed merge and changes only `PROJECT_CONTEXT.md`.
+
+**Next immediate task:** Review and merge this status update, then synchronize
+local `main`. Agree on the next small increment before implementing it.
+No subsequent increment has been selected or started.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
