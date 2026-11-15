@@ -2,10 +2,13 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-17-status`
-**Active feature development:** None; next increment not yet agreed.
+**Active development branch:** `feature/synthetic-response-example`
+**Active feature development:** Milestone 18 synthetic response example; implemented, pending review and merge.
 **Development environment:** macOS, VS Code, Python 3.12.3
 **Status:** Milestones 1–17 completed and merged into `main`.
+Milestone 18 adds a runnable synthetic example; review and merge are pending.
+The Milestone 17 status update merged through PR #26
+(commit `53d4276a921b206c3572d1461369117a174949b4`).
 Milestone 17 merged through PR #25
 (commit `3f86f791f487e9ca68eaf5377858758554b41dd5`).
 The merged tree matches the version that passed all 70 tests with resource
@@ -681,11 +684,35 @@ Merge confirmed on GitHub after user review:
 - Merged tree: `844b6c2a32cb37b88b8867b2a3cb4977011b2504`, matching the tested implementation.
 - User-reported review and merge do not establish local macOS test or synchronization results.
 
+**Milestone 18 — Implemented; pending review and merge**
+
+Added `examples/followup_response.py`, runnable from the repository root with
+`python -m examples.followup_response`. It creates a temporary workbook with
+fictional contacts and prints named JSON responses for exact-date, due-through,
+empty-result, and invalid-date scenarios. Fixed dates make results repeatable.
+
+The example restores the prior NETWORKING_WORKBOOK value, including empty or
+absent configuration, and removes its temporary directory on success or a
+Python exception. Queries use the existing response wrapper and leave the
+synthetic workbook unchanged. Only fixture creation writes a workbook.
+The README documents the command and expected outcomes. Application behavior,
+dependencies, and infrastructure are unchanged.
+
+Validation in the execution environment:
+- Existing 70-test baseline passed before changes.
+- The example ran successfully with all four expected responses.
+- Focused checks verified JSON output, unchanged fixture bytes, configuration
+  restoration for absent/empty/set values, and cleanup on both success and an
+  injected unexpected exception. Unexpected errors propagate without partial output.
+- All 70 existing tests passed after the change with ResourceWarning enabled
+  and no warnings.
+- No personal workbook was accessed. Local macOS validation remains unconfirmed.
+
 ## 6. Next development tasks
 
-1. Review and merge this Milestone 17 documentation status update.
-2. Synchronize local `main` with the merged changes.
-3. Confirm the 70-test suite passes locally on macOS.
+1. Review the Milestone 18 pull request and run the example and tests locally.
+2. Merge the feature branch after review and validation.
+3. Synchronize local `main` and record the confirmed merge.
 4. Agree on the next small increment before implementation.
 
 No subsequent increment has been agreed or started.
@@ -735,19 +762,18 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–17 and the Milestone 16 status update (PR #24) are merged.
-Milestone 17 merged through PR #25. All 70 tests passed with resource warnings enabled and no warnings
-in the execution environment on November 14, 2026.
+Milestones 1–17 and the Milestone 17 status update (PR #26) are merged.
+Milestone 18 is implemented on `feature/synthetic-response-example`,
+pending review and merge. The synthetic example and all 70 existing tests
+passed in the execution environment with resource warnings enabled and no warnings.
 Local macOS validation remains unconfirmed.
 
-Workbook access remains read-only. The separate response wrapper provides
-JSON-compatible results and safe expected-error responses. The existing
-adapter and CLI retain their behavior. No next increment has been selected.
+The example demonstrates the existing read-only response wrapper using only
+temporary fictional data. Configuration is restored and temporary files cleaned
+up even if a query raises an unexpected exception. The production query,
+adapter, response wrapper, and CLI remain unchanged.
 
-This documentation-only update on `docs/milestone-17-status` changes
-`PROJECT_CONTEXT.md` to record the confirmed merge and current stopping point.
-
-**Next immediate task:** Review and merge this status update, then synchronize
-local `main` and confirm local validation before agreeing on the next increment.
+**Next immediate task:** Review and validate the Milestone 18 PR before merge.
+No subsequent increment has been agreed or started.
 
 Do not introduce MCP, agents, or additional infrastructure yet.

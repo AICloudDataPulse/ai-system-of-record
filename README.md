@@ -170,6 +170,36 @@ When finished, leave the virtual environment with:
 deactivate
 ```
 
+## Try the response wrapper with fictional data
+
+With the virtual environment active, run from the repository root:
+
+```bash
+python -m examples.followup_response
+```
+
+No workbook configuration is needed. The example creates a temporary workbook
+with two fictional contacts and prints one JSON object containing four named
+responses from `get_followups_response()`:
+
+| Scenario | Expected result |
+| --- | --- |
+| `exact_date` | Success; Alex Example, total 1 |
+| `due_through` | Success; Alex Example and Sam Sample, total 2 |
+| `empty_result` | Success; empty contacts, total 0 |
+| `invalid_date` | Failure; `INVALID_INPUT` |
+
+Dates are fixed so results are repeatable. The scenario names belong to this
+demonstration; each nested response uses the existing wrapper contract.
+The invalid-date response is expected, so the completed example exits with
+status 0. Unexpected exceptions propagate.
+
+The example temporarily sets `NETWORKING_WORKBOOK` only in its own process,
+restores its previous value (including an empty or absent setting), and removes
+the temporary workbook on normal completion or a Python exception. It never
+opens your configured workbook. Only the synthetic fixture is written; queries
+remain read-only. It uses existing dependencies and makes no network calls.
+
 ## Run the tests
 
 With the virtual environment active, run from the repository root:
