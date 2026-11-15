@@ -114,6 +114,24 @@ def get_workbook_path():
 
     return Path(value)
 
+def get_followups(date_value, *, include_earlier=False):
+    """Query NETWORKING_WORKBOOK using a YYYY-MM-DD string and Boolean flag.
+
+    Validate inputs before reading configuration or accessing the workbook.
+    Return query_followups() records unchanged; propagate exceptions without
+    prompting, printing, or exiting. The caller cannot supply a workbook path.
+    """
+    if not isinstance(date_value, str):
+        raise TypeError("date_value must be a str.")
+    if not isinstance(include_earlier, bool):
+        raise TypeError("include_earlier must be a bool.")
+    target_date = parse_followup_date(date_value)
+    workbook_path = get_workbook_path()
+    return query_followups(
+        workbook_path, target_date, include_earlier=include_earlier,
+    )
+
+
 def main(*, include_earlier=False, date_value=None, json_output=False):
     if json_output and date_value is None:
         print("--json requires --date.", file=sys.stderr)

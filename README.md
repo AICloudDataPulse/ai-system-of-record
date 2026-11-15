@@ -178,7 +178,7 @@ With the virtual environment active, run from the repository root:
 python -m unittest discover -s tests -v
 ```
 
-The current suite contains 57 tests and should finish with `OK`.
+The current suite contains 63 tests and should finish with `OK`.
 It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 
 - [tests/test_followups.py](tests/test_followups.py) covers date validation,
@@ -200,6 +200,9 @@ It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
   query, native cell values, workbook closure on success and failure, error
   propagation, empty results, no console/configuration interaction, unchanged bytes,
   and rejection of invalid query argument types before workbook access.
+- [tests/test_followup_adapter.py](tests/test_followup_adapter.py) checks the
+  configured adapter, both modes, invalid inputs before configuration/access,
+  missing configuration, exception propagation, and workbook preservation.
 - [tests/test_contact_schema.py](tests/test_contact_schema.py) checks worksheet
   and header errors through both CLI modes, exact header matching, reordered
   and extra columns, header-only sheets, workbook preservation, and closure
@@ -251,6 +254,28 @@ contacts = query_followups(
     include_earlier=True,
 )
 ```
+
+For callers using the configured workbook, use the adapter in the same module:
+
+```python
+from networking.followups import get_followups
+
+contacts = get_followups("2026-11-14", include_earlier=True)
+```
+
+`get_followups(date_value, *, include_earlier=False)` requires a date string
+in `YYYY-MM-DD` format and a Boolean flag. Surrounding whitespace and valid
+leap days follow the existing date parser's rules. Invalid types raise
+`TypeError`; invalid date strings raise `ValueError`. Both are rejected
+before configuration lookup or workbook access.
+
+The adapter reads `NETWORKING_WORKBOOK` at call time and calls
+`query_followups()`. It accepts no workbook-path argument. Missing/empty
+configuration raises `ValueError`; query exceptions propagate unchanged.
+The returned list and native field types match `query_followups()`, including
+the calendar-date `followup_due`. It performs no prompting, printing, process
+exits, or JSON conversion. Configure the environment before calling it.
+The CLI continues using its existing input and error-handling flow.
 
 Both CLI formats now collect matching records before printing, using memory
 proportional to the matching results. Query failures produce no partial

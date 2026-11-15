@@ -2,10 +2,14 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-15-status`
-**Active feature development:** None; next increment not yet agreed.
+**Active development branch:** `feature/configured-followup-adapter`
+**Active feature development:** Milestone 16 configured-workbook adapter; implemented, pending review and merge.
 **Development environment:** macOS, VS Code, Python 3.12.3
 **Status:** Milestones 1–15 completed and merged into `main`.
+Milestone 16 is implemented on the feature branch; all 63 tests passed in the
+execution environment on November 14, 2026. Review and merge are pending.
+The Milestone 15 status update merged through PR #22
+(commit `30b0e92422b036a1578745035e27043310c738f9`).
 Milestone 15 merged through PR #21 on November 14, 2026
 (commit `93dd95ca395df4c9dfb604f59fc0b37b9824a4b6`).
 The merged tree matches the version that passed all 57 tests with resource
@@ -132,6 +136,14 @@ ValueErrors as schema failures. `main()` retains configuration, input, error
 reporting, and text/JSON formatting. Both formats now buffer matching records
 and print only after the query has completed and the workbook is closed.
 
+`get_followups(date_value, *, include_earlier=False)` is a small adapter in
+the same module. It validates a YYYY-MM-DD string and Boolean flag before
+configuration lookup, reads NETWORKING_WORKBOOK at call time, and delegates
+to `query_followups()`. It accepts no workbook path, returns records
+unchanged, and propagates exceptions without prompting, printing, or exiting.
+Wrong argument types raise TypeError; invalid date strings or missing/empty
+configuration raise ValueError. The CLI retains its existing flow.
+
 ### Date validation and testing
 
 - `parse_followup_date()` validates calendar dates and requires
@@ -151,6 +163,8 @@ and print only after the query has completed and the workbook is closed.
 - Workbook-query tests: `tests/test_workbook_query.py`, covering returned
   values, lifecycle, exception propagation, separation from CLI/configuration,
   and argument validation before workbook access.
+- Adapter tests: `tests/test_followup_adapter.py`, covering configured queries,
+  validation before configuration/access, errors, and workbook preservation.
 - Schema tests: `tests/test_contact_schema.py`, covering both CLI modes and
   workbook closure after schema errors.
 - File-format tests: `tests/test_workbook_formats.py`, covering unsupported
@@ -579,14 +593,38 @@ and `main` points to this commit at verification time. The merged tree
 (`e3658a424cd2678815b38887d57675f31586b2ed`) matches the tested version.
 Local macOS validation and synchronization have not been separately confirmed.
 
+**Milestone 16 — Implemented; pending review and merge**
+
+Added `get_followups()` to compose existing date parsing, workbook
+configuration, and read-only querying. Inputs are a date string and Boolean
+flag, with no workbook-path argument. Validate types and parse the date before
+reading configuration or opening a workbook. Return native query records
+unchanged and let exceptions propagate. No CLI changes, response envelope,
+error codes, AI/MCP connection, new dependencies, or infrastructure.
+
+Validation on November 14, 2026 in the execution environment:
+- Original 57-test baseline passed before changes.
+- All 63 tests passed with ResourceWarning enabled and no warnings, using
+  Python 3.12.14 and openpyxl 3.1.5.
+- Six new adapter tests cover both modes, whitespace, valid leap day/empty
+  results, native returned values, no prompting/output, and unchanged bytes.
+- Invalid date types/strings and non-Boolean flags fail before configuration,
+  query delegation, or workbook access.
+- Missing/empty/whitespace-only configuration raises ValueError without
+  querying. File/format/schema/unexpected query exceptions propagate unchanged.
+- Existing CLI, query, lifecycle, and validation tests passed.
+- Synthetic data only; no personal workbook accessed.
+- Fresh dependency downloads and local macOS validation were not performed.
+
 ## 6. Next development tasks
 
-1. Review and merge this documentation-only status update.
-2. Synchronize local `main` after merging.
-3. Confirm local macOS validation of the 57-test suite if not already performed.
+1. Review the Milestone 16 pull request and validate locally on macOS.
+2. Merge the feature branch after review and successful validation.
+3. Synchronize local `main` and record the confirmed merge.
 4. Agree on the next small increment before implementation.
 
-No next feature has been selected or started.
+A response envelope and defined error codes were discussed as a possible
+Milestone 17; their design and implementation have not been agreed or started.
 Complete and validate each increment before starting the next.
 Keep personal workbook data and local configuration out of Git.
 
@@ -633,20 +671,17 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–15 are completed and merged into `main`.
-All 57 tests passed in the execution environment on November 14, 2026,
-with resource warnings enabled and no warnings. The merged tree matches the
-tested version. Local macOS validation and synchronization have not been
-separately confirmed. See Section 5 for evidence.
+Milestones 1–15 and the Milestone 15 status update (PR #22) are merged.
+Milestone 16 is implemented on `feature/configured-followup-adapter`, pending
+review and merge. All 63 tests passed with resource warnings enabled and no
+warnings in the execution environment on November 14, 2026.
+Local macOS validation remains unconfirmed.
 
-Workbook access remains read-only. Results include the follow-up due date
-as a native Python date and a YYYY-MM-DD value in text and JSON output.
+Workbook access remains read-only. The new adapter accepts a date string and
+query flag, reads local configuration, and returns the existing query records.
+The CLI retains its current behavior.
 
-This documentation-only update on `docs/milestone-15-status` records the
-confirmed merge and changes only `PROJECT_CONTEXT.md`.
-
-**Next immediate task:** Review and merge this status update, then synchronize
-local `main`. Agree on the next small increment before implementing it.
-No subsequent increment has been selected or started.
+**Next immediate task:** Review and validate the Milestone 16 PR before merge.
+Agree on the next increment separately.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
