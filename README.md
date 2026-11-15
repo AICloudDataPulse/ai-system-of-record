@@ -208,7 +208,7 @@ With the virtual environment active, run from the repository root:
 python -m unittest discover -s tests -v
 ```
 
-The current suite contains 70 tests and should finish with `OK`.
+The current suite contains 75 tests and should finish with `OK`.
 It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 
 - [tests/test_followups.py](tests/test_followups.py) covers date validation,
@@ -233,6 +233,9 @@ It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 - [tests/test_followup_adapter.py](tests/test_followup_adapter.py) checks the
   configured adapter, both modes, invalid inputs before configuration/access,
   missing configuration, exception propagation, and workbook preservation.
+- [tests/test_followup_request.py](tests/test_followup_request.py) checks request
+  shape, unknown fields, defaults, validation before access, unchanged requests,
+  synthetic workbook results, safe errors, and unexpected-error propagation.
 - [tests/test_followup_response.py](tests/test_followup_response.py) checks response
   shapes, safe error mapping, JSON compatibility, native-record preservation,
   CLI equivalence, and propagation of unexpected errors.
@@ -377,6 +380,35 @@ ValueErrors. Existing callers catching ValueError and the CLI keep their
 behavior. The native adapter still raises exceptions and returns native
 records. The CLI JSON format remains `contacts`/`total`; it does not adopt
 this wrapper's envelope.
+
+For a decoded request dictionary, use the narrow request handler:
+
+```python
+from networking.followups import handle_followup_request
+
+response = handle_followup_request({
+    "date": "2026-11-14",
+    "include_earlier": True,
+})
+```
+
+`handle_followup_request(request)` requires a dictionary with a `date` field.
+Only `include_earlier` is optional; it defaults to `False`. Unknown fields
+(including workbook paths), missing dates, and non-dictionary requests return
+`INVALID_INPUT`. JSON text is not parsed by this function.
+
+Field validation uses the existing response wrapper: date must be a valid
+YYYY-MM-DD string (surrounding whitespace allowed), and include_earlier must
+be a Boolean. Numbers and strings are not coerced. Invalid requests fail before
+configuration lookup or workbook access. Shape errors use a fixed message:
+"Provide a request dictionary with date and optional include_earlier only."
+
+Valid requests return the existing success/error response unchanged.
+The request dictionary is not modified. The handler performs no console I/O,
+accepts no workbook path, and does not catch unexpected exceptions.
+Workbook selection remains controlled by `NETWORKING_WORKBOOK`.
+This is a Python request interface, not a JSON transport, AI integration,
+or authorization layer.
 
 Both CLI formats now collect matching records before printing, using memory
 proportional to the matching results. Query failures produce no partial
