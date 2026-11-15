@@ -2,12 +2,15 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Active development branch:** `feature/followup-response`
-**Active feature development:** Milestone 17 integration response wrapper; implemented, pending review and merge.
+**Current documentation branch:** `docs/milestone-17-status`
+**Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–16 completed and merged into `main`.
-Milestone 17 is implemented on the feature branch; all 70 tests passed in the
-execution environment on November 14, 2026. Review and merge are pending.
+**Status:** Milestones 1–17 completed and merged into `main`.
+Milestone 17 merged through PR #25
+(commit `3f86f791f487e9ca68eaf5377858758554b41dd5`).
+The merged tree matches the version that passed all 70 tests with resource
+warnings enabled and no warnings in the execution environment on November 14, 2026.
+Local macOS validation and synchronization remain unconfirmed.
 The Milestone 16 status update merged through PR #24
 (commit `85e8e798455a602f59bb06c3955477f0ea725329`).
 Milestone 16 merged through PR #23
@@ -646,7 +649,7 @@ and `main` points to this commit at verification time. The merged tree
 (`8c737dfb6f205177ccd141f099a1bbc5bf1b285f`) matches the tested version.
 Local macOS validation and synchronization have not been separately confirmed.
 
-**Milestone 17 — Implemented; pending review and merge**
+**Milestone 17 — Completed and merged**
 
 Added `get_followups_response()` with normalized success metadata and
 defined safe error responses. The wrapper validates inputs locally before
@@ -672,11 +675,17 @@ Validation on November 14, 2026 in the execution environment:
 - No personal workbook accessed; no dependencies or infrastructure added.
 - Fresh dependency downloads and local macOS validation were not performed.
 
+Merge confirmed on GitHub after user review:
+- [PR #25](https://github.com/AICloudDataPulse/ai-system-of-record/pull/25).
+- Merge commit: `3f86f791f487e9ca68eaf5377858758554b41dd5`.
+- Merged tree: `844b6c2a32cb37b88b8867b2a3cb4977011b2504`, matching the tested implementation.
+- User-reported review and merge do not establish local macOS test or synchronization results.
+
 ## 6. Next development tasks
 
-1. Review the Milestone 17 pull request and validate locally on macOS.
-2. Merge the feature branch after review and successful validation.
-3. Synchronize local `main` and record the confirmed merge.
+1. Review and merge this Milestone 17 documentation status update.
+2. Synchronize local `main` with the merged changes.
+3. Confirm the 70-test suite passes locally on macOS.
 4. Agree on the next small increment before implementation.
 
 No subsequent increment has been agreed or started.
@@ -726,9 +735,8 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–16 and the Milestone 16 status update (PR #24) are merged.
-Milestone 17 is implemented on `feature/followup-response`, pending review
-and merge. All 70 tests passed with resource warnings enabled and no warnings
+Milestones 1–17 and the Milestone 16 status update (PR #24) are merged.
+Milestone 17 merged through PR #25. All 70 tests passed with resource warnings enabled and no warnings
 in the execution environment on November 14, 2026.
 Local macOS validation remains unconfirmed.
 
@@ -736,6 +744,10 @@ Workbook access remains read-only. The separate response wrapper provides
 JSON-compatible results and safe expected-error responses. The existing
 adapter and CLI retain their behavior. No next increment has been selected.
 
-**Next immediate task:** Review and validate the Milestone 17 PR before merge.
+This documentation-only update on `docs/milestone-17-status` changes
+`PROJECT_CONTEXT.md` to record the confirmed merge and current stopping point.
+
+**Next immediate task:** Review and merge this status update, then synchronize
+local `main` and confirm local validation before agreeing on the next increment.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
