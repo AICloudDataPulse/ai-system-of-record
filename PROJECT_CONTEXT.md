@@ -2,10 +2,14 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-19-status`
-**Active feature development:** None; next increment not yet agreed.
+**Active development branch:** `feature/followup-request`
+**Active feature development:** Milestone 20 dictionary request interface; implemented, pending validation, review, and merge.
 **Development environment:** macOS, VS Code, Python 3.12.3
 **Status:** Milestones 1–19 completed and merged into `main`.
+The Milestone 19 status update merged through PR #30
+(commit `e8a1cfb6b4358cf7d7de333ce26527cdd6c6f7d5`), with successful post-merge CI.
+Milestone 20 is implemented on the feature branch; validation, review,
+and merge are pending.
 The Milestone 18 status update merged through PR #28
 (commit `97dd6de083ae61845bcda3cad39b440f9f2c2557`).
 Milestone 19 merged through PR #29
@@ -180,6 +184,13 @@ WorkbookConfigurationError subclasses ValueError to distinguish missing/empty
 configuration without catching unrelated ValueErrors. The adapter still
 raises exceptions and returns native records. A shared private formatter
 serves the wrapper and CLI; the existing CLI JSON contract is unchanged.
+
+`handle_followup_request(request)` accepts a decoded dictionary requiring
+`date` and allowing only optional `include_earlier` (default False). It rejects
+invalid shapes with a safe INVALID_INPUT response and delegates field validation
+and querying to `get_followups_response()`. It preserves requests and responses,
+performs no JSON parsing or console I/O, and accepts no workbook path.
+Unexpected exceptions propagate. See README.md for examples.
 
 ### Date validation and testing
 
@@ -763,11 +774,35 @@ Validation:
   the synthetic example. Local macOS execution of the full suite remains
   unconfirmed; hosted results are recorded separately.
 
+**Milestone 20 — Implemented; pending validation, review, and merge**
+
+Added `handle_followup_request(request)` in networking/followups.py.
+The handler accepts a dictionary with required date and optional include_earlier.
+Missing date, unknown fields, and non-dictionaries return a fixed INVALID_INPUT
+response. Existing response-wrapper validation rejects invalid field types and
+dates before configuration lookup or workbook access. No coercion is introduced.
+
+The existing response format, error behavior, CLI, workbook configuration, and
+read-only query remain unchanged. Requests are not mutated and unexpected
+exceptions propagate. No JSON parser, dependencies, AI provider, transport,
+or additional infrastructure are added.
+
+Validation:
+- The original 70-test baseline passed with resource warnings enabled.
+- Five new tests passed, covering shape/field validation, default and explicit
+  modes, delegation, unchanged inputs, real synthetic workbook results and
+  preservation, no console I/O, configuration failure, and unexpected errors.
+- All 75 tests passed with resource warnings enabled and no warnings in the
+  execution environment. The existing synthetic example also ran successfully.
+- Hosted CI must be confirmed before merge.
+- No personal workbook accessed. Local macOS validation of this increment
+  remains unconfirmed.
+
 ## 6. Next development tasks
 
-1. Review this documentation status update and its CI result, then merge.
-2. Confirm the documentation merge's push-to-main CI run succeeds.
-3. Synchronize local `main` with the merged documentation.
+1. Confirm the Milestone 20 test suite and hosted CI pass, then review the PR.
+2. Merge after review and successful validation; confirm post-merge CI.
+3. Synchronize local `main` and record the confirmed results.
 4. Agree on the next small increment before implementation.
 
 No subsequent increment has been agreed or started.
@@ -817,22 +852,13 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–19 and the Milestone 18 status update (PR #28) are merged.
-Milestone 19 merged through PR #29. GitHub Actions succeeded both on the PR
-and on the merged commit in `main`. Automated validation is now in place
-for pull requests targeting `main` and pushes to `main`.
+Milestones 1–19 and the Milestone 19 status update (PR #30) are merged.
+Milestone 20 is implemented on `feature/followup-request`, pending validation,
+review, and merge. It adds a dictionary request interface to the existing
+read-only response wrapper. No subsequent increment has been agreed or started.
 
-Milestone 18's local macOS example run is confirmed; a local run of the full
-70-test suite remains unconfirmed. The suite has passed in the execution
-environment and GitHub-hosted CI. Branch protection has not been changed.
+**Next immediate task:** Confirm the full test suite and PR's CI check pass,
+review and merge the request interface, then verify post-merge CI.
 
-This documentation-only update on `docs/milestone-19-status` records the
-confirmed merge and hosted validation results in `PROJECT_CONTEXT.md`.
-
-**Next immediate task:** Review this status update and its CI result, merge,
-and synchronize local `main` after confirming the post-merge CI run.
-No subsequent increment has been agreed or started.
-
-The agreed GitHub Actions validation workflow is in place. Do not introduce
-MCP, agents, deployment, or other infrastructure without agreeing on the
-next increment.
+The existing GitHub Actions workflow remains in place. Do not introduce MCP,
+agents, deployment, or other infrastructure without agreeing on the next increment.

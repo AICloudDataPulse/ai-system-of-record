@@ -191,6 +191,27 @@ def get_followups_response(date_value, *, include_earlier=False):
     }
 
 
+def handle_followup_request(request):
+    """Accept a decoded request dictionary and return the existing response.
+
+    Require date; allow only the optional include_earlier field. The response
+    wrapper validates field types and dates before configuration or access.
+    Do not parse JSON text, mutate the request, or catch unexpected exceptions.
+    """
+    if (
+        not isinstance(request, dict)
+        or "date" not in request
+        or any(key not in ("date", "include_earlier") for key in request)
+    ):
+        return _error_response(
+            "INVALID_INPUT",
+            "Provide a request dictionary with date and optional include_earlier only.",
+        )
+    return get_followups_response(
+        request["date"], include_earlier=request.get("include_earlier", False),
+    )
+
+
 def main(*, include_earlier=False, date_value=None, json_output=False):
     if json_output and date_value is None:
         print("--json requires --date.", file=sys.stderr)
