@@ -2,11 +2,15 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Active development branch:** `feature/synthetic-response-example`
-**Active feature development:** Milestone 18 synthetic response example; implemented, pending review and merge.
+**Current documentation branch:** `docs/milestone-18-status`
+**Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–17 completed and merged into `main`.
-Milestone 18 adds a runnable synthetic example; review and merge are pending.
+**Status:** Milestones 1–18 completed and merged into `main`.
+Milestone 18 merged through PR #27
+(commit `34eb35c8e3b541f5705c1fe670767052b3de0867`).
+The user ran the synthetic example locally on macOS and shared output matching
+all four expected scenarios. A local run of the full 70-test suite remains
+unconfirmed; the suite passed in the execution environment.
 The Milestone 17 status update merged through PR #26
 (commit `53d4276a921b206c3572d1461369117a174949b4`).
 Milestone 17 merged through PR #25
@@ -684,7 +688,7 @@ Merge confirmed on GitHub after user review:
 - Merged tree: `844b6c2a32cb37b88b8867b2a3cb4977011b2504`, matching the tested implementation.
 - User-reported review and merge do not establish local macOS test or synchronization results.
 
-**Milestone 18 — Implemented; pending review and merge**
+**Milestone 18 — Completed and merged**
 
 Added `examples/followup_response.py`, runnable from the repository root with
 `python -m examples.followup_response`. It creates a temporary workbook with
@@ -706,13 +710,25 @@ Validation in the execution environment:
   injected unexpected exception. Unexpected errors propagate without partial output.
 - All 70 existing tests passed after the change with ResourceWarning enabled
   and no warnings.
-- No personal workbook was accessed. Local macOS validation remains unconfirmed.
+- No personal workbook was accessed.
+
+Merge and local validation:
+
+- [PR #27](https://github.com/AICloudDataPulse/ai-system-of-record/pull/27) is merged.
+- Merge commit: `34eb35c8e3b541f5705c1fe670767052b3de0867`.
+- Merged tree: `e89a3bf5f84d3ceb3f7736008f2e91981d3096ea`, matching the tested implementation.
+- The user ran `python -m examples.followup_response` locally on macOS after
+  reporting review and merge. Shared output confirms exact-date total 1,
+  due-through total 2, empty-result total 0, and INVALID_INPUT for the invalid date.
+- The local output confirms the example results. It does not independently
+  verify cleanup, configuration restoration, or a local run of the full test
+  suite; those checks passed in the execution environment.
 
 ## 6. Next development tasks
 
-1. Review the Milestone 18 pull request and run the example and tests locally.
-2. Merge the feature branch after review and validation.
-3. Synchronize local `main` and record the confirmed merge.
+1. Review and merge this Milestone 18 documentation status update.
+2. Synchronize local `main` with the merged documentation.
+3. Confirm the full 70-test suite passes locally on macOS.
 4. Agree on the next small increment before implementation.
 
 No subsequent increment has been agreed or started.
@@ -762,18 +778,23 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–17 and the Milestone 17 status update (PR #26) are merged.
-Milestone 18 is implemented on `feature/synthetic-response-example`,
-pending review and merge. The synthetic example and all 70 existing tests
-passed in the execution environment with resource warnings enabled and no warnings.
-Local macOS validation remains unconfirmed.
+Milestones 1–18 and the Milestone 17 status update (PR #26) are merged.
+Milestone 18 merged through PR #27. The synthetic example and all 70 existing
+tests passed in the execution environment with resource warnings enabled and
+no warnings. The user also confirmed a successful local macOS example run,
+with shared output matching all four expected scenarios. A local run of the
+full test suite remains unconfirmed.
 
 The example demonstrates the existing read-only response wrapper using only
 temporary fictional data. Configuration is restored and temporary files cleaned
 up even if a query raises an unexpected exception. The production query,
 adapter, response wrapper, and CLI remain unchanged.
 
-**Next immediate task:** Review and validate the Milestone 18 PR before merge.
+This documentation-only update on `docs/milestone-18-status` records the
+confirmed merge and local example results in `PROJECT_CONTEXT.md`.
+
+**Next immediate task:** Review and merge this status update, then synchronize
+local `main` and confirm the local test suite before agreeing on the next increment.
 No subsequent increment has been agreed or started.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
