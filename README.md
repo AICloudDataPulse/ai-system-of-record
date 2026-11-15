@@ -178,7 +178,7 @@ With the virtual environment active, run from the repository root:
 python -m unittest discover -s tests -v
 ```
 
-The current suite contains 63 tests and should finish with `OK`.
+The current suite contains 70 tests and should finish with `OK`.
 It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 
 - [tests/test_followups.py](tests/test_followups.py) covers date validation,
@@ -203,6 +203,9 @@ It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 - [tests/test_followup_adapter.py](tests/test_followup_adapter.py) checks the
   configured adapter, both modes, invalid inputs before configuration/access,
   missing configuration, exception propagation, and workbook preservation.
+- [tests/test_followup_response.py](tests/test_followup_response.py) checks response
+  shapes, safe error mapping, JSON compatibility, native-record preservation,
+  CLI equivalence, and propagation of unexpected errors.
 - [tests/test_contact_schema.py](tests/test_contact_schema.py) checks worksheet
   and header errors through both CLI modes, exact header matching, reordered
   and extra columns, header-only sheets, workbook preservation, and closure
@@ -276,6 +279,54 @@ The returned list and native field types match `query_followups()`, including
 the calendar-date `followup_due`. It performs no prompting, printing, process
 exits, or JSON conversion. Configure the environment before calling it.
 The CLI continues using its existing input and error-handling flow.
+
+For a JSON-compatible response dictionary, call the separate wrapper:
+
+```python
+from networking.followups import get_followups_response
+
+response = get_followups_response(" 2026-11-14 ", include_earlier=True)
+```
+
+A successful response has exactly these top-level fields:
+
+```json
+{"ok": true, "query_date": "2026-11-14", "mode": "due_through", "contacts": [], "total": 0}
+```
+
+`query_date` is normalized to YYYY-MM-DD; `mode` is `exact` or
+`due_through`. Contacts use the same four fields and conversion rules as
+CLI JSON. No matches is a success with an empty list and total 0.
+
+An expected failure has only `ok` and `error`:
+
+```json
+{"ok": false, "error": {"code": "WORKBOOK_NOT_FOUND", "message": "The configured workbook was not found."}}
+```
+
+| Code | Condition | Fixed message |
+| --- | --- | --- |
+| `INVALID_INPUT` | Wrong date/flag type | Provide a YYYY-MM-DD date string and a Boolean include_earlier. |
+| `INVALID_INPUT` | Invalid date string | Provide a valid date in YYYY-MM-DD format. |
+| `CONFIGURATION_ERROR` | Missing/empty workbook configuration | NETWORKING_WORKBOOK is not set or is empty. |
+| `CONTACT_SCHEMA_ERROR` | Missing worksheet or invalid required headers | The Contacts worksheet or required headers are invalid. |
+| `WORKBOOK_FORMAT_ERROR` | Unsupported format or invalid ZIP container | The workbook format or Excel ZIP container is invalid. |
+| `WORKBOOK_NOT_FOUND` | FileNotFoundError | The configured workbook was not found. |
+| `WORKBOOK_PERMISSION_DENIED` | PermissionError | The configured workbook cannot be read. |
+| `WORKBOOK_ACCESS_ERROR` | Other OSError | The configured workbook could not be accessed. |
+
+The wrapper validates inputs before configuration/access, calls
+`get_followups()`, and returns a dictionary without printing or exiting.
+Expected errors contain fixed messages without raw input, file paths,
+exception text, or partial records. Unexpected exceptions propagate;
+formatting errors are outside the expected-error handler.
+
+Missing configuration now raises `WorkbookConfigurationError`, a
+`ValueError` subclass, allowing the wrapper to distinguish it from unrelated
+ValueErrors. Existing callers catching ValueError and the CLI keep their
+behavior. The native adapter still raises exceptions and returns native
+records. The CLI JSON format remains `contacts`/`total`; it does not adopt
+this wrapper's envelope.
 
 Both CLI formats now collect matching records before printing, using memory
 proportional to the matching results. Query failures produce no partial

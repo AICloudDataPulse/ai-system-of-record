@@ -2,10 +2,14 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-16-status`
-**Active feature development:** None; next increment not yet agreed.
+**Active development branch:** `feature/followup-response`
+**Active feature development:** Milestone 17 integration response wrapper; implemented, pending review and merge.
 **Development environment:** macOS, VS Code, Python 3.12.3
 **Status:** Milestones 1–16 completed and merged into `main`.
+Milestone 17 is implemented on the feature branch; all 70 tests passed in the
+execution environment on November 14, 2026. Review and merge are pending.
+The Milestone 16 status update merged through PR #24
+(commit `85e8e798455a602f59bb06c3955477f0ea725329`).
 Milestone 16 merged through PR #23
 (commit `ee7a351f057116d049e672a94e84d9acf920bd68`).
 The merged tree matches the version that passed all 63 tests with resource
@@ -147,6 +151,20 @@ unchanged, and propagates exceptions without prompting, printing, or exiting.
 Wrong argument types raise TypeError; invalid date strings or missing/empty
 configuration raise ValueError. The CLI retains its existing flow.
 
+`get_followups_response(date_value, *, include_earlier=False)` calls the
+adapter and returns a JSON-compatible dictionary. Success contains ok=true,
+normalized query_date, mode (exact/due_through), contacts, and total.
+No matches is successful. Expected failure contains only ok=false and error
+(code/message), using fixed messages without raw inputs, paths, or exceptions.
+Codes distinguish invalid input, configuration, schema, format, missing file,
+permission denial, and other file-access failures. See README.md for the
+exact contract. Unexpected exceptions and formatting errors propagate.
+
+WorkbookConfigurationError subclasses ValueError to distinguish missing/empty
+configuration without catching unrelated ValueErrors. The adapter still
+raises exceptions and returns native records. A shared private formatter
+serves the wrapper and CLI; the existing CLI JSON contract is unchanged.
+
 ### Date validation and testing
 
 - `parse_followup_date()` validates calendar dates and requires
@@ -168,6 +186,8 @@ configuration raise ValueError. The CLI retains its existing flow.
   and argument validation before workbook access.
 - Adapter tests: `tests/test_followup_adapter.py`, covering configured queries,
   validation before configuration/access, errors, and workbook preservation.
+- Response tests: `tests/test_followup_response.py`, covering the response
+  contract, safe errors, JSON conversion, native records, and unexpected errors.
 - Schema tests: `tests/test_contact_schema.py`, covering both CLI modes and
   workbook closure after schema errors.
 - File-format tests: `tests/test_workbook_formats.py`, covering unsupported
@@ -626,15 +646,40 @@ and `main` points to this commit at verification time. The merged tree
 (`8c737dfb6f205177ccd141f099a1bbc5bf1b285f`) matches the tested version.
 Local macOS validation and synchronization have not been separately confirmed.
 
+**Milestone 17 — Implemented; pending review and merge**
+
+Added `get_followups_response()` with normalized success metadata and
+defined safe error responses. The wrapper validates inputs locally before
+calling `get_followups()`. Narrow exception handling distinguishes expected
+failures; unexpected TypeError/ValueError/KeyError/RuntimeError still propagate.
+WorkbookConfigurationError is a ValueError subclass, preserving existing
+ValueError-based handling. Extracted shared JSON contact formatting without
+changing the CLI format or mutating native records.
+
+Validation on November 14, 2026 in the execution environment:
+- Original 63-test baseline passed before changes.
+- All 70 tests passed with ResourceWarning enabled and no warnings, using
+  Python 3.12.14 and openpyxl 3.1.5.
+- Seven new tests cover exact/due-through/empty results, normalized dates,
+  full response shapes, JSON round-trips, Unicode/newlines/nulls/numeric
+  display values, and equality with existing CLI JSON contact data.
+- Invalid inputs fail before configuration or access. Missing configuration,
+  real missing/invalid/schema workbooks, and simulated permission/access
+  errors produce safe codes/messages without path or exception disclosure.
+- Unexpected adapter/formatting errors propagate. Native records remain
+  unchanged and synthetic workbook bytes are preserved.
+- Existing CLI, adapter, query, lifecycle, and validation tests passed.
+- No personal workbook accessed; no dependencies or infrastructure added.
+- Fresh dependency downloads and local macOS validation were not performed.
+
 ## 6. Next development tasks
 
-1. Review and merge this documentation-only status update.
-2. Synchronize local `main` after merging.
-3. Confirm local macOS validation of the 63-test suite if not already performed.
+1. Review the Milestone 17 pull request and validate locally on macOS.
+2. Merge the feature branch after review and successful validation.
+3. Synchronize local `main` and record the confirmed merge.
 4. Agree on the next small increment before implementation.
 
-A response envelope and defined error codes were discussed as a possible
-Milestone 17; their design and implementation have not been agreed or started.
+No subsequent increment has been agreed or started.
 Complete and validate each increment before starting the next.
 Keep personal workbook data and local configuration out of Git.
 
@@ -681,22 +726,16 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–16 are completed and merged into `main`.
-All 63 tests passed in the execution environment on November 14, 2026,
-with resource warnings enabled and no warnings. The merged tree matches the
-tested version. Local macOS validation and synchronization have not been
-separately confirmed. See Section 5 for evidence.
+Milestones 1–16 and the Milestone 16 status update (PR #24) are merged.
+Milestone 17 is implemented on `feature/followup-response`, pending review
+and merge. All 70 tests passed with resource warnings enabled and no warnings
+in the execution environment on November 14, 2026.
+Local macOS validation remains unconfirmed.
 
-Workbook access remains read-only. The configured-workbook adapter accepts
-a date string and Boolean query flag, validates inputs before configuration
-lookup, and returns native query records. The CLI retains its current behavior.
+Workbook access remains read-only. The separate response wrapper provides
+JSON-compatible results and safe expected-error responses. The existing
+adapter and CLI retain their behavior. No next increment has been selected.
 
-This documentation-only update on `docs/milestone-16-status` records the
-confirmed merge and changes only `PROJECT_CONTEXT.md`.
-
-**Next immediate task:** Review and merge this status update, then synchronize
-local `main`. Agree on the next small increment before implementing it.
-The proposed response envelope/error-code increment remains unapproved and
-unimplemented.
+**Next immediate task:** Review and validate the Milestone 17 PR before merge.
 
 Do not introduce MCP, agents, or additional infrastructure yet.

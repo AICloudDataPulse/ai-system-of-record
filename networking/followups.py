@@ -16,6 +16,10 @@ class ContactSchemaError(ValueError):
     """The Contacts worksheet or its required headers are invalid."""
 
 
+class WorkbookConfigurationError(ValueError):
+    """NETWORKING_WORKBOOK is missing or empty."""
+
+
 def get_contact_rows_and_columns(workbook):
     if "Contacts" not in workbook.sheetnames:
         raise ContactSchemaError("Workbook is missing the 'Contacts' worksheet.")
@@ -107,7 +111,7 @@ def get_workbook_path():
     value = os.environ.get("NETWORKING_WORKBOOK")
 
     if value is None or not value.strip():
-        raise ValueError(
+        raise WorkbookConfigurationError(
             "NETWORKING_WORKBOOK is not set or is empty. "
             "Set it to the path of your Excel workbook."
         )
@@ -130,6 +134,61 @@ def get_followups(date_value, *, include_earlier=False):
     return query_followups(
         workbook_path, target_date, include_earlier=include_earlier,
     )
+
+
+def _json_contacts(contacts):
+    """Format native records without mutating them."""
+    return [
+        {
+            **{key: None if contact[key] is None else str(contact[key])
+               for key in ("name", "company", "next_action")},
+            "followup_due": contact["followup_due"].isoformat(),
+        }
+        for contact in contacts
+    ]
+
+
+def _error_response(code, message):
+    return {"ok": False, "error": {"code": code, "message": message}}
+
+
+def get_followups_response(date_value, *, include_earlier=False):
+    """Return a JSON-compatible success or expected-failure dictionary.
+
+    No console I/O or process exits. Unexpected exceptions propagate.
+    Error responses contain fixed messages, never raw exception details.
+    """
+    if not isinstance(date_value, str) or not isinstance(include_earlier, bool):
+        return _error_response(
+            "INVALID_INPUT", "Provide a YYYY-MM-DD date string and a Boolean include_earlier.",
+        )
+    try:
+        target_date = parse_followup_date(date_value)
+    except ValueError:
+        return _error_response("INVALID_INPUT", "Provide a valid date in YYYY-MM-DD format.")
+
+    try:
+        contacts = get_followups(target_date.isoformat(), include_earlier=include_earlier)
+    except WorkbookConfigurationError:
+        return _error_response("CONFIGURATION_ERROR", "NETWORKING_WORKBOOK is not set or is empty.")
+    except ContactSchemaError:
+        return _error_response("CONTACT_SCHEMA_ERROR", "The Contacts worksheet or required headers are invalid.")
+    except (InvalidFileException, BadZipFile):
+        return _error_response("WORKBOOK_FORMAT_ERROR", "The workbook format or Excel ZIP container is invalid.")
+    except FileNotFoundError:
+        return _error_response("WORKBOOK_NOT_FOUND", "The configured workbook was not found.")
+    except PermissionError:
+        return _error_response("WORKBOOK_PERMISSION_DENIED", "The configured workbook cannot be read.")
+    except OSError:
+        return _error_response("WORKBOOK_ACCESS_ERROR", "The configured workbook could not be accessed.")
+
+    return {
+        "ok": True,
+        "query_date": target_date.isoformat(),
+        "mode": "due_through" if include_earlier else "exact",
+        "contacts": _json_contacts(contacts),
+        "total": len(contacts),
+    }
 
 
 def main(*, include_earlier=False, date_value=None, json_output=False):
@@ -195,15 +254,7 @@ def main(*, include_earlier=False, date_value=None, json_output=False):
         sys.exit(1)
 
     if json_output:
-        # Display fields are strings/null; due dates use ISO calendar dates.
-        contacts = [
-            {
-                **{key: None if contact[key] is None else str(contact[key])
-                   for key in ("name", "company", "next_action")},
-                "followup_due": contact["followup_due"].isoformat(),
-            }
-            for contact in contacts
-        ]
+        contacts = _json_contacts(contacts)
         print(json.dumps({"contacts": contacts, "total": len(contacts)}))
         return
 
