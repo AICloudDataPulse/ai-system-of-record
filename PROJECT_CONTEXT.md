@@ -2,12 +2,15 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Active development branch:** `feature/configured-followup-adapter`
-**Active feature development:** Milestone 16 configured-workbook adapter; implemented, pending review and merge.
+**Current documentation branch:** `docs/milestone-16-status`
+**Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–15 completed and merged into `main`.
-Milestone 16 is implemented on the feature branch; all 63 tests passed in the
-execution environment on November 14, 2026. Review and merge are pending.
+**Status:** Milestones 1–16 completed and merged into `main`.
+Milestone 16 merged through PR #23
+(commit `ee7a351f057116d049e672a94e84d9acf920bd68`).
+The merged tree matches the version that passed all 63 tests with resource
+warnings enabled and no warnings. Local macOS validation and synchronization
+remain unconfirmed.
 The Milestone 15 status update merged through PR #22
 (commit `30b0e92422b036a1578745035e27043310c738f9`).
 Milestone 15 merged through PR #21 on November 14, 2026
@@ -593,7 +596,7 @@ and `main` points to this commit at verification time. The merged tree
 (`e3658a424cd2678815b38887d57675f31586b2ed`) matches the tested version.
 Local macOS validation and synchronization have not been separately confirmed.
 
-**Milestone 16 — Implemented; pending review and merge**
+**Milestone 16 — Completed and merged**
 
 Added `get_followups()` to compose existing date parsing, workbook
 configuration, and read-only querying. Inputs are a date string and Boolean
@@ -616,11 +619,18 @@ Validation on November 14, 2026 in the execution environment:
 - Synthetic data only; no personal workbook accessed.
 - Fresh dependency downloads and local macOS validation were not performed.
 
+Merged through [PR #23](https://github.com/AICloudDataPulse/ai-system-of-record/pull/23)
+(commit `ee7a351f057116d049e672a94e84d9acf920bd68`).
+The developer reported review and merge; GitHub confirmed PR #23 is merged
+and `main` points to this commit at verification time. The merged tree
+(`8c737dfb6f205177ccd141f099a1bbc5bf1b285f`) matches the tested version.
+Local macOS validation and synchronization have not been separately confirmed.
+
 ## 6. Next development tasks
 
-1. Review the Milestone 16 pull request and validate locally on macOS.
-2. Merge the feature branch after review and successful validation.
-3. Synchronize local `main` and record the confirmed merge.
+1. Review and merge this documentation-only status update.
+2. Synchronize local `main` after merging.
+3. Confirm local macOS validation of the 63-test suite if not already performed.
 4. Agree on the next small increment before implementation.
 
 A response envelope and defined error codes were discussed as a possible
@@ -671,17 +681,22 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–15 and the Milestone 15 status update (PR #22) are merged.
-Milestone 16 is implemented on `feature/configured-followup-adapter`, pending
-review and merge. All 63 tests passed with resource warnings enabled and no
-warnings in the execution environment on November 14, 2026.
-Local macOS validation remains unconfirmed.
+Milestones 1–16 are completed and merged into `main`.
+All 63 tests passed in the execution environment on November 14, 2026,
+with resource warnings enabled and no warnings. The merged tree matches the
+tested version. Local macOS validation and synchronization have not been
+separately confirmed. See Section 5 for evidence.
 
-Workbook access remains read-only. The new adapter accepts a date string and
-query flag, reads local configuration, and returns the existing query records.
-The CLI retains its current behavior.
+Workbook access remains read-only. The configured-workbook adapter accepts
+a date string and Boolean query flag, validates inputs before configuration
+lookup, and returns native query records. The CLI retains its current behavior.
 
-**Next immediate task:** Review and validate the Milestone 16 PR before merge.
-Agree on the next increment separately.
+This documentation-only update on `docs/milestone-16-status` records the
+confirmed merge and changes only `PROJECT_CONTEXT.md`.
+
+**Next immediate task:** Review and merge this status update, then synchronize
+local `main`. Agree on the next small increment before implementing it.
+The proposed response envelope/error-code increment remains unapproved and
+unimplemented.
 
 Do not introduce MCP, agents, or additional infrastructure yet.
