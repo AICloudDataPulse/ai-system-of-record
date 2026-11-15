@@ -2,10 +2,14 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-18-status`
-**Active feature development:** None; next increment not yet agreed.
+**Active development branch:** `chore/github-actions-validation`
+**Active feature development:** Milestone 19 GitHub Actions validation; implemented, pending hosted validation, review, and merge.
 **Development environment:** macOS, VS Code, Python 3.12.3
 **Status:** Milestones 1–18 completed and merged into `main`.
+The Milestone 18 status update merged through PR #28
+(commit `97dd6de083ae61845bcda3cad39b440f9f2c2557`).
+Milestone 19 adds the agreed minimal CI workflow. Hosted validation, review,
+and merge are pending.
 Milestone 18 merged through PR #27
 (commit `34eb35c8e3b541f5705c1fe670767052b3de0867`).
 The user ran the synthetic example locally on macOS and shared output matching
@@ -724,11 +728,37 @@ Merge and local validation:
   verify cleanup, configuration restoration, or a local run of the full test
   suite; those checks passed in the execution environment.
 
+**Milestone 19 — Implemented; pending hosted validation, review, and merge**
+
+Added `.github/workflows/python-validation.yml` for pull requests targeting
+`main` and pushes to `main`. One Ubuntu 24.04 job sets up Python 3.12,
+installs existing pinned requirements, runs the full unittest suite, and
+runs the synthetic response example. Resource warnings are visible in logs.
+The example is a smoke check; the tests assert the response contract.
+
+The workflow uses contents: read, disables persistent checkout credentials,
+pins actions to full commit SHAs, and has a ten-minute timeout. No custom
+secrets, personal workbook data, deployment, or branch-protection changes
+are included. README.md documents the check and its limits.
+
+The user agreed to this narrowly scoped CI addition. The previous restriction
+on additional infrastructure now permits this GitHub-hosted validation workflow;
+MCP, agents, deployment, and other infrastructure remain outside this increment.
+
+Validation:
+- The 70-test baseline passed before changes with resource warnings enabled.
+- Workflow commands and YAML structure are checked in the execution environment.
+- GitHub action release tags were resolved to commits and their action metadata
+  reviewed before pinning.
+- Hosted CI success must be confirmed on the pull request before this milestone
+  is considered validated. Local command results alone do not establish that
+  GitHub Actions ran successfully.
+
 ## 6. Next development tasks
 
-1. Review and merge this Milestone 18 documentation status update.
-2. Synchronize local `main` with the merged documentation.
-3. Confirm the full 70-test suite passes locally on macOS.
+1. Confirm the Milestone 19 hosted CI check succeeds and review the pull request.
+2. Merge after successful validation and review, then confirm the push-to-main run.
+3. Synchronize local `main` and record the verified results.
 4. Agree on the next small increment before implementation.
 
 No subsequent increment has been agreed or started.
@@ -778,23 +808,19 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–18 and the Milestone 17 status update (PR #26) are merged.
-Milestone 18 merged through PR #27. The synthetic example and all 70 existing
-tests passed in the execution environment with resource warnings enabled and
-no warnings. The user also confirmed a successful local macOS example run,
-with shared output matching all four expected scenarios. A local run of the
-full test suite remains unconfirmed.
+Milestones 1–18 and the Milestone 18 status update (PR #28) are merged.
+Milestone 19 is implemented on `chore/github-actions-validation`, pending
+hosted validation, review, and merge. Production code, tests, and dependencies
+are unchanged. The agreed scope adds automated validation on GitHub.
 
-The example demonstrates the existing read-only response wrapper using only
-temporary fictional data. Configuration is restored and temporary files cleaned
-up even if a query raises an unexpected exception. The production query,
-adapter, response wrapper, and CLI remain unchanged.
+Milestone 18's local macOS example run is confirmed; a local run of the full
+70-test suite remains unconfirmed. The suite has passed in the execution
+environment. Hosted CI results are a separate validation step.
 
-This documentation-only update on `docs/milestone-18-status` records the
-confirmed merge and local example results in `PROJECT_CONTEXT.md`.
-
-**Next immediate task:** Review and merge this status update, then synchronize
-local `main` and confirm the local test suite before agreeing on the next increment.
+**Next immediate task:** Confirm the PR's GitHub Actions check succeeds and
+review the workflow before merge, then verify the push-to-main run.
 No subsequent increment has been agreed or started.
 
-Do not introduce MCP, agents, or additional infrastructure yet.
+Only the agreed GitHub Actions validation workflow is permitted as additional
+infrastructure in this increment. Do not introduce MCP, agents, deployment,
+or other infrastructure yet.

@@ -246,6 +246,26 @@ It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 
 Temporary test workbooks are cleaned up automatically.
 
+## Automated validation on GitHub
+
+[Python validation](.github/workflows/python-validation.yml) runs on pull
+requests targeting `main` and pushes to `main`. One Ubuntu 24.04 job uses
+Python 3.12, installs `requirements.txt`, runs the full unittest suite, and
+runs the synthetic response example. Resource warnings are shown in the logs;
+they are not configured as a separate failing gate. The example is a smoke
+check; response assertions are covered by the tests.
+
+Review the **Tests and synthetic example** check on the pull request before
+merging. A failed dependency installation, test, or example command fails the
+job. The workflow has a ten-minute timeout. It uses read-only repository
+permissions, does not persist checkout credentials, and pins GitHub actions
+to full commit SHAs with release comments. It requires no custom secrets or
+personal workbook configuration; all workbook data is synthetic.
+
+This adds CI validation only. It does not deploy the application or change
+branch protection. Requiring a passing check before GitHub permits merging
+would be a separate repository-settings decision.
+
 ## Current architecture and data protection
 
 `main()` in [networking/followups.py](networking/followups.py) validates the
