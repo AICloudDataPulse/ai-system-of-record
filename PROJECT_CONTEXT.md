@@ -2,14 +2,16 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Active development branch:** `feature/followup-request`
-**Active feature development:** Milestone 20 dictionary request interface; implemented, pending validation, review, and merge.
+**Current documentation branch:** `docs/milestone-20-status`
+**Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–19 completed and merged into `main`.
+**Status:** Milestones 1–20 completed and merged into `main`.
 The Milestone 19 status update merged through PR #30
 (commit `e8a1cfb6b4358cf7d7de333ce26527cdd6c6f7d5`), with successful post-merge CI.
-Milestone 20 is implemented on the feature branch; validation, review,
-and merge are pending.
+Milestone 20 merged through PR #31
+(commit `763a80a1b9442473bfd9f03557bd07552c568823`).
+GitHub-hosted validation succeeded on the PR and the merged commit in `main`,
+including the 75-test suite and synthetic example.
 The Milestone 18 status update merged through PR #28
 (commit `97dd6de083ae61845bcda3cad39b440f9f2c2557`).
 Milestone 19 merged through PR #29
@@ -774,7 +776,7 @@ Validation:
   the synthetic example. Local macOS execution of the full suite remains
   unconfirmed; hosted results are recorded separately.
 
-**Milestone 20 — Implemented; pending validation, review, and merge**
+**Milestone 20 — Completed and merged**
 
 Added `handle_followup_request(request)` in networking/followups.py.
 The handler accepts a dictionary with required date and optional include_earlier.
@@ -794,15 +796,21 @@ Validation:
   preservation, no console I/O, configuration failure, and unexpected errors.
 - All 75 tests passed with resource warnings enabled and no warnings in the
   execution environment. The existing synthetic example also ran successfully.
-- Hosted CI must be confirmed before merge.
+- [PR validation run](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/43665556127)
+  completed successfully for feature commit `e913f5d68e57372cd2da2068632c7e5cd460cdab`.
+- The user reviewed and merged [PR #31](https://github.com/AICloudDataPulse/ai-system-of-record/pull/31).
+  GitHub confirmed merge commit `763a80a1b9442473bfd9f03557bd07552c568823`.
+- [Post-merge validation run](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/43665652652)
+  completed successfully for that merge commit, including the 75-test suite
+  and synthetic example.
 - No personal workbook accessed. Local macOS validation of this increment
   remains unconfirmed.
 
 ## 6. Next development tasks
 
-1. Confirm the Milestone 20 test suite and hosted CI pass, then review the PR.
-2. Merge after review and successful validation; confirm post-merge CI.
-3. Synchronize local `main` and record the confirmed results.
+1. Review this documentation status update and its CI result, then merge.
+2. Confirm the documentation merge's push-to-main CI run succeeds.
+3. Synchronize local `main` with the merged documentation.
 4. Agree on the next small increment before implementation.
 
 No subsequent increment has been agreed or started.
@@ -852,13 +860,18 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–19 and the Milestone 19 status update (PR #30) are merged.
-Milestone 20 is implemented on `feature/followup-request`, pending validation,
-review, and merge. It adds a dictionary request interface to the existing
-read-only response wrapper. No subsequent increment has been agreed or started.
+Milestones 1–20 and the Milestone 19 status update (PR #30) are merged.
+Milestone 20 merged through PR #31. Its dictionary request interface is now
+available on `main`. The 75-test suite and synthetic example passed in both
+the execution environment and GitHub-hosted CI, including the post-merge run.
+Local macOS validation of this increment remains unconfirmed.
 
-**Next immediate task:** Confirm the full test suite and PR's CI check pass,
-review and merge the request interface, then verify post-merge CI.
+This documentation-only update on `docs/milestone-20-status` records the
+confirmed merge and CI results in `PROJECT_CONTEXT.md`.
+No subsequent increment has been agreed or started.
+
+**Next immediate task:** Review this status update and its CI result, merge,
+and synchronize local `main` after confirming the post-merge CI run.
 
 The existing GitHub Actions workflow remains in place. Do not introduce MCP,
 agents, deployment, or other infrastructure without agreeing on the next increment.
