@@ -2,10 +2,13 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-24-status`
+**Current documentation branch:** `docs/milestone-25-status`
 **Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–24 completed and merged into `main`.
+**Status:** Milestones 1–25 completed and merged into `main`.
+Milestone 25 is the first verified live LLM tool call. On macOS, the developer
+used `gpt-4.1-mini` to select and parameterize `get_followups` for two questions.
+Python executed both read-only queries against a temporary fictional workbook.
 Milestone 24 merged through PR #39. All 81 tests and the synthetic example passed.
 Milestone 23 merged through PR #37. All 79 tests and the synthetic example passed.
 Milestone 22 merged through PR #35. All 78 tests and the synthetic example passed.
@@ -212,7 +215,11 @@ when an assistant should request the read-only lookup. Its input schema requires
 `dispatch_tool_call(tool_name, arguments_json)` with the exact name `get_followups`
 and serialized arguments. The dispatcher delegates to `handle_followup_json()`.
 Other names return `UNKNOWN_TOOL` before argument parsing or workbook access.
-Live LLM integration is pending.
+The opt-in `examples/live_followups.py` calls the OpenAI Responses API with a
+fixed question and the tool definition. It dispatches the model’s tool call
+locally and prints the result. Workbook contents, paths, and query results stay
+on the host. The regular `networking/followups.py` CLI runs locally without a
+model call. Natural-language queries against the personal workbook remain future work.
 
 Run `python -m examples.followup_response` to exercise the dictionary handler
 with a temporary fictional workbook. The example prints a JSON response for
@@ -900,6 +907,32 @@ names before delegation. The four-scenario synthetic example also passed.
 Both [PR validation](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44215453330)
 and [post-merge validation](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44215676881) passed.
 
+**Milestone 25 — First live LLM tool call, verified on macOS**
+
+The developer ran `python -m examples.live_followups --model gpt-4.1-mini`
+on their Mac with a locally configured `OPENAI_API_KEY`. Each question went
+to the OpenAI Responses API with automatic tool selection. The model selected
+`get_followups` for both questions. The dispatcher validated the arguments
+through the existing handler and queried the temporary fictional workbook.
+The terminal output confirmed the following results.
+
+| Live prompt | Query date | Returned mode | Contacts returned |
+| --- | --- | --- | --- |
+| Who is due on November 14, 2026? | 2026-11-14 | `exact` | Alex Example (1) |
+| Who is due through November 14, 2026? | 2026-11-14 | `due_through` | Alex Example and Sam Sample (2) |
+
+Sam’s November 13 due date explains the extra contact in the second query.
+The example printed both results locally. The live API requests used the
+developer’s API project independently of the ChatGPT conversation.
+
+**Automated validation.** All 84 tests passed in the development environment.
+The API tests use simulated responses. GitHub Actions ran the suite and the
+offline synthetic example on [PR #41](https://github.com/AICloudDataPulse/ai-system-of-record/pull/41)
+and after its merge at `683cc04acbcaecbb7b55d7813d5744344e176a93`.
+[PR validation](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44218983440)
+and [post-merge validation](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44219157909) both passed.
+The two live results above come from the developer’s separate macOS run.
+
 ## 6. Next development tasks
 
 1. Review this documentation status update and its CI result, then merge.
@@ -923,7 +956,8 @@ Implement validated changes with backups and explicit authorization.
 
 **Phase 3 — AI integration**
 
-Allow an AI assistant to invoke narrowly scoped operations.
+Milestone 25 verified the first narrow operation with a live model and fictional
+contacts. Natural-language access to the personal workbook remains future work.
 
 **Phase 4 — MCP integration**
 
@@ -954,10 +988,9 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–24 are on `main`. A simulated named tool call now reaches the
-read-only workbook query through the dispatcher. Connecting a live model
-remains future work. The next increment is open for agreement.
+Milestones 1–25 are on `main`. Live selection of the read-only follow-up tool
+and local execution are verified for both fixed prompts against fictional data.
+The personal workbook remains accessible through the deterministic local CLI.
 
 Review and merge this documentation update, then verify its post-merge CI
-as described in section 6. Local macOS validation and synchronization for
-Milestone 24 remain unconfirmed.
+as described in section 6. The next feature remains open for agreement.
