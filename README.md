@@ -427,6 +427,21 @@ proportional to the matching results. Query failures produce no partial
 contact output. The lower-level `iter_followups()` remains available; callers
 using it directly must keep their workbook open while consuming the iterator.
 
+### Tool definition for assistant integration
+
+[get_followups.tool.json](networking/get_followups.tool.json) describes the
+read-only lookup and its arguments using JSON Schema. A future assistant
+integration can use this provider-neutral definition to describe the tool to
+a model. For example, “Who is due through November 17, 2026?” maps to
+`{"date":"2026-11-17","include_earlier":true}`. For “Who is due on November
+17, 2026?”, the arguments are `{"date":"2026-11-17"}`.
+
+The host application would route the tool name `get_followups` to
+`handle_followup_request()` for decoded arguments or `handle_followup_json()`
+for serialized arguments. These handlers validate the request and obtain the
+workbook path from local configuration. The definition itself makes no model
+or workbook calls.
+
 The local workbook is the authoritative working record. OneDrive is used for
 backup and recovery, not continuous synchronization managed by this tool.
 The script has no workbook-save operation and makes no network calls.
