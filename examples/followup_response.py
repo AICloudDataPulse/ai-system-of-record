@@ -1,4 +1,4 @@
-"""Demonstrate response dictionaries using only a temporary fictional workbook.
+"""Demonstrate follow-up requests using a temporary fictional workbook.
 
 Run from the repository root: python -m examples.followup_response
 """
@@ -11,7 +11,7 @@ from tempfile import TemporaryDirectory
 
 from openpyxl import Workbook
 
-from networking.followups import get_followups_response
+from networking.followups import handle_followup_request
 
 
 def main():
@@ -35,15 +35,14 @@ def main():
         previous_path = os.environ.get("NETWORKING_WORKBOOK")
         try:
             os.environ["NETWORKING_WORKBOOK"] = str(path)
-            scenarios = (
-                ("exact_date", "2026-11-14", False),
-                ("due_through", "2026-11-14", True),
-                ("empty_result", "2026-11-12", False),
-                ("invalid_date", "2026-02-30", False),
-            )
+            requests = {
+                "exact_date": {"date": "2026-11-14"},
+                "due_through": {"date": "2026-11-14", "include_earlier": True},
+                "empty_result": {"date": "2026-11-12"},
+                "invalid_date": {"date": "2026-02-30"},
+            }
             results = {
-                name: get_followups_response(value, include_earlier=include_earlier)
-                for name, value, include_earlier in scenarios
+                name: handle_followup_request(request) for name, request in requests.items()
             }
         finally:
             if previous_path is None:
