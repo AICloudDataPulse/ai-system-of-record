@@ -170,7 +170,7 @@ When finished, leave the virtual environment with:
 deactivate
 ```
 
-## Try the response wrapper with fictional data
+## Try the follow-up request handler with fictional data
 
 With the virtual environment active, run from the repository root:
 
@@ -179,8 +179,10 @@ python -m examples.followup_response
 ```
 
 No workbook configuration is needed. The example creates a temporary workbook
-with two fictional contacts and prints one JSON object containing four named
-responses from `get_followups_response()`:
+with two fictional contacts and passes four request dictionaries to
+`handle_followup_request()`. A request containing only `date` selects exact
+matches. Adding `"include_earlier": True` also selects earlier dates.
+The example prints one JSON object with the four named responses.
 
 | Scenario | Expected result |
 | --- | --- |
