@@ -2,10 +2,11 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-22-status`
+**Current documentation branch:** `docs/milestone-23-status`
 **Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–22 completed and merged into `main`.
+**Status:** Milestones 1–23 completed and merged into `main`.
+Milestone 23 merged through PR #37. All 79 tests and the synthetic example passed.
 Milestone 22 merged through PR #35. All 78 tests and the synthetic example passed.
 Milestone 21 merged through PR #33 with successful post-merge CI.
 The Milestone 19 status update merged through PR #30
@@ -203,6 +204,12 @@ response before workbook access. Successfully decoded values go to
 `handle_followup_request()` for validation and querying. Unexpected handler
 exceptions propagate.
 
+[The `get_followups` tool definition](networking/get_followups.tool.json) describes
+when an assistant should request the read-only lookup. Its input schema requires
+`date` and allows one optional Boolean, `include_earlier`, which defaults to
+`false`. Additional fields are disallowed. A future host application can route
+the arguments to the existing Python handlers. Live LLM integration is pending.
+
 Run `python -m examples.followup_response` to exercise the dictionary handler
 with a temporary fictional workbook. The example prints a JSON response for
 each of four requests: exact date, due through a date, no matches, and an
@@ -229,6 +236,8 @@ invalid date.
   and argument validation before workbook access.
 - Adapter tests: `tests/test_followup_adapter.py`, covering configured queries,
   validation before configuration/access, errors, and workbook preservation.
+- Tool definition test: `tests/test_followup_tool.py` checks the published tool
+  name, required and optional arguments, types, date format, and default mode.
 - Request tests: `tests/test_followup_request.py` covers both dictionary and JSON
   inputs, rejection before workbook access, and equivalent synthetic query results.
 - Response tests: `tests/test_followup_response.py`, covering the response
@@ -855,6 +864,20 @@ four-scenario dictionary example also passed.
 Both [PR validation](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44211447562)
 and [post-merge validation](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44211809437) passed.
 
+**Milestone 23 — Completed and merged**
+
+Added a provider-neutral tool description and input schema for `get_followups`.
+The README shows how “on” a date maps to an exact match and “through” a date
+includes earlier follow-ups. Workbook access and validation use the existing
+Python handlers. The shell pipe proposal was deferred pending a caller that needs it.
+
+The 78-test baseline passed before the change. All 79 tests passed afterward
+with resource warnings enabled, and the synthetic example produced the four
+expected responses. [PR #37](https://github.com/AICloudDataPulse/ai-system-of-record/pull/37)
+merged into `main` at `6a8408c40e3c7c032004379821f5d4f2712dfbda`.
+Both [PR validation](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44213115167)
+and [post-merge validation](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44214176674) passed.
+
 ## 6. Next development tasks
 
 1. Review this documentation status update and its CI result, then merge.
@@ -909,10 +932,10 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–22 are on `main`. Python callers can now submit either a decoded
-dictionary or JSON text for a read-only follow-up query. Hosted CI passed on
-the Milestone 22 merge. Validation on the developer’s Mac and synchronization
-of its local `main` remain unconfirmed.
+Milestones 1–23 are on `main`. The read-only follow-up query has a published
+tool definition and tested Python handlers. Connecting a model and routing
+its tool calls remain future work. The next increment is open for agreement.
 
 Review and merge this documentation update, then verify its post-merge CI
-as described in section 6. The next feature remains open for agreement.
+as described in section 6. Local macOS validation and synchronization for
+Milestone 23 remain unconfirmed.
