@@ -2,10 +2,11 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-20-status`
+**Current documentation branch:** `docs/milestone-21-status`
 **Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–20 completed and merged into `main`.
+**Status:** Milestones 1–21 completed and merged into `main`.
+Milestone 21 merged through PR #33 with successful post-merge CI.
 The Milestone 19 status update merged through PR #30
 (commit `e8a1cfb6b4358cf7d7de333ce26527cdd6c6f7d5`), with successful post-merge CI.
 Milestone 20 merged through PR #31
@@ -193,6 +194,11 @@ invalid shapes with a safe INVALID_INPUT response and delegates field validation
 and querying to `get_followups_response()`. It preserves requests and responses,
 performs no JSON parsing or console I/O, and accepts no workbook path.
 Unexpected exceptions propagate. See README.md for examples.
+
+Run `python -m examples.followup_response` to exercise the request handler
+with a temporary fictional workbook. The example prints a JSON response for
+each of four requests: exact date, due through a date, no matches, and an
+invalid date.
 
 ### Date validation and testing
 
@@ -806,6 +812,22 @@ Validation:
 - No personal workbook accessed. Local macOS validation of this increment
   remains unconfirmed.
 
+**Milestone 21 — Completed and merged**
+
+The synthetic example now passes request dictionaries to `handle_followup_request()`.
+The exact-date request supplies only `date`. The due-through request also sets
+`include_earlier` to `True`. The README describes both forms.
+
+All 75 tests passed before and after the change with resource warnings enabled.
+The parsed JSON matched the baseline for all four scenarios, including the
+contact records and the invalid-date error. The exact-date, due-through, and
+empty queries returned 1, 2, and 0 contacts respectively. The invalid date
+returned `INVALID_INPUT`.
+
+- The preceding Milestone 20 status update merged through [PR #32](https://github.com/AICloudDataPulse/ai-system-of-record/pull/32), and its [post-merge CI run](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/43666169132) passed.
+- The developer reviewed and merged [PR #33](https://github.com/AICloudDataPulse/ai-system-of-record/pull/33) at commit `14e0356aa2b7d6d11d609744e3805b32778821b9`.
+- Both the [PR validation run](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44209174357) and the [post-merge run on main](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44209333503) passed the test suite and ran the example.
+
 ## 6. Next development tasks
 
 1. Review this documentation status update and its CI result, then merge.
@@ -860,18 +882,11 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–20 and the Milestone 19 status update (PR #30) are merged.
-Milestone 20 merged through PR #31. Its dictionary request interface is now
-available on `main`. The 75-test suite and synthetic example passed in both
-the execution environment and GitHub-hosted CI, including the post-merge run.
-Local macOS validation of this increment remains unconfirmed.
+Milestones 1–21 are on `main`. The runnable example exercises the same
+dictionary request interface available to Python callers. GitHub-hosted
+validation passed for the Milestone 21 merge. Validation on the developer’s
+Mac and synchronization of its local `main` remain unconfirmed.
 
-This documentation-only update on `docs/milestone-20-status` records the
-confirmed merge and CI results in `PROJECT_CONTEXT.md`.
-No subsequent increment has been agreed or started.
-
-**Next immediate task:** Review this status update and its CI result, merge,
-and synchronize local `main` after confirming the post-merge CI run.
-
-The existing GitHub Actions workflow remains in place. Do not introduce MCP,
-agents, deployment, or other infrastructure without agreeing on the next increment.
+The current work is the Milestone 21 documentation update. After review,
+merge, and post-merge validation, agree on the next increment as described
+in section 6. No subsequent feature has been selected.
