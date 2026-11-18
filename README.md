@@ -202,6 +202,27 @@ the temporary workbook on normal completion or a Python exception. It never
 opens your configured workbook. Only the synthetic fixture is written; queries
 remain read-only. It uses existing dependencies and makes no network calls.
 
+## Try live tool selection with OpenAI
+
+From the repository root, activate the project environment and set
+`OPENAI_API_KEY` privately in your shell. Replace `YOUR_MODEL` with an
+OpenAI model available to your API account that supports function calling.
+
+```bash
+python -m examples.live_followups --model YOUR_MODEL
+```
+
+The example makes up to two billable Responses API requests, one for each
+fictional question. The model chooses whether to call the published tool.
+Python runs the selected call against a temporary workbook and prints the
+results locally. The workbook, its path, and query results stay local.
+
+The **on November 14** question should return Alex Example. The **through
+November 14** question should also return Sam Sample. Both checks must pass
+for exit status 0. A missing call, multiple calls, or an unexpected query
+result fails the run. CI exercises this path with simulated responses.
+Record live validation separately, including the model used.
+
 ## Run the tests
 
 With the virtual environment active, run from the repository root:
