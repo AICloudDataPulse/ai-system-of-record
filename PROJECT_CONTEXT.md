@@ -2,10 +2,11 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-23-status`
+**Current documentation branch:** `docs/milestone-24-status`
 **Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–23 completed and merged into `main`.
+**Status:** Milestones 1–24 completed and merged into `main`.
+Milestone 24 merged through PR #39. All 81 tests and the synthetic example passed.
 Milestone 23 merged through PR #37. All 79 tests and the synthetic example passed.
 Milestone 22 merged through PR #35. All 78 tests and the synthetic example passed.
 Milestone 21 merged through PR #33 with successful post-merge CI.
@@ -207,8 +208,11 @@ exceptions propagate.
 [The `get_followups` tool definition](networking/get_followups.tool.json) describes
 when an assistant should request the read-only lookup. Its input schema requires
 `date` and allows one optional Boolean, `include_earlier`, which defaults to
-`false`. Additional fields are disallowed. A future host application can route
-the arguments to the existing Python handlers. Live LLM integration is pending.
+`false`. Additional fields are disallowed. A host can call
+`dispatch_tool_call(tool_name, arguments_json)` with the exact name `get_followups`
+and serialized arguments. The dispatcher delegates to `handle_followup_json()`.
+Other names return `UNKNOWN_TOOL` before argument parsing or workbook access.
+Live LLM integration is pending.
 
 Run `python -m examples.followup_response` to exercise the dictionary handler
 with a temporary fictional workbook. The example prints a JSON response for
@@ -878,6 +882,24 @@ merged into `main` at `6a8408c40e3c7c032004379821f5d4f2712dfbda`.
 Both [PR validation](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44213115167)
 and [post-merge validation](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44214176674) passed.
 
+**Milestone 24 — Completed and merged**
+
+Implemented local dispatch of a simulated `get_followups` tool call in
+`networking/followups.py`. The README shows how to pass the name and serialized
+arguments. The caller receives the existing JSON handler’s response, including
+`INVALID_INPUT` for invalid arguments. Unknown tool names receive a fixed error.
+
+The 79-test baseline passed before the change. All 81 tests passed afterward
+with resource warnings enabled. Synthetic workbook tests exercised exact-date,
+due-through, and empty results through the dispatcher and checked workbook
+preservation. Focused tests covered invalid arguments and rejection of unknown
+names before delegation. The four-scenario synthetic example also passed.
+
+[PR #39](https://github.com/AICloudDataPulse/ai-system-of-record/pull/39) merged into
+`main` at `ff6fc65f96510371b0e27b5999feb706839572dc`.
+Both [PR validation](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44215453330)
+and [post-merge validation](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44215676881) passed.
+
 ## 6. Next development tasks
 
 1. Review this documentation status update and its CI result, then merge.
@@ -932,10 +954,10 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–23 are on `main`. The read-only follow-up query has a published
-tool definition and tested Python handlers. Connecting a model and routing
-its tool calls remain future work. The next increment is open for agreement.
+Milestones 1–24 are on `main`. A simulated named tool call now reaches the
+read-only workbook query through the dispatcher. Connecting a live model
+remains future work. The next increment is open for agreement.
 
 Review and merge this documentation update, then verify its post-merge CI
 as described in section 6. Local macOS validation and synchronization for
-Milestone 23 remain unconfirmed.
+Milestone 24 remain unconfirmed.
