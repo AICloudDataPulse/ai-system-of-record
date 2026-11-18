@@ -2,10 +2,11 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-21-status`
+**Current documentation branch:** `docs/milestone-22-status`
 **Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–21 completed and merged into `main`.
+**Status:** Milestones 1–22 completed and merged into `main`.
+Milestone 22 merged through PR #35. All 78 tests and the synthetic example passed.
 Milestone 21 merged through PR #33 with successful post-merge CI.
 The Milestone 19 status update merged through PR #30
 (commit `e8a1cfb6b4358cf7d7de333ce26527cdd6c6f7d5`), with successful post-merge CI.
@@ -195,7 +196,14 @@ and querying to `get_followups_response()`. It preserves requests and responses,
 performs no JSON parsing or console I/O, and accepts no workbook path.
 Unexpected exceptions propagate. See README.md for examples.
 
-Run `python -m examples.followup_response` to exercise the request handler
+`handle_followup_json(request_text)` accepts a Python string containing one JSON
+document. It rejects duplicate keys at any depth and nonstandard constants such
+as `NaN`. Decoding failures and non-string inputs return a fixed `INVALID_INPUT`
+response before workbook access. Successfully decoded values go to
+`handle_followup_request()` for validation and querying. Unexpected handler
+exceptions propagate.
+
+Run `python -m examples.followup_response` to exercise the dictionary handler
 with a temporary fictional workbook. The example prints a JSON response for
 each of four requests: exact date, due through a date, no matches, and an
 invalid date.
@@ -221,6 +229,8 @@ invalid date.
   and argument validation before workbook access.
 - Adapter tests: `tests/test_followup_adapter.py`, covering configured queries,
   validation before configuration/access, errors, and workbook preservation.
+- Request tests: `tests/test_followup_request.py` covers both dictionary and JSON
+  inputs, rejection before workbook access, and equivalent synthetic query results.
 - Response tests: `tests/test_followup_response.py`, covering the response
   contract, safe errors, JSON conversion, native records, and unexpected errors.
 - Schema tests: `tests/test_contact_schema.py`, covering both CLI modes and
@@ -828,6 +838,23 @@ returned `INVALID_INPUT`.
 - The developer reviewed and merged [PR #33](https://github.com/AICloudDataPulse/ai-system-of-record/pull/33) at commit `14e0356aa2b7d6d11d609744e3805b32778821b9`.
 - Both the [PR validation run](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44209174357) and the [post-merge run on main](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44209333503) passed the test suite and ran the example.
 
+**Milestone 22 — Completed and merged**
+
+Added `handle_followup_json()` and a README example for callers with serialized
+requests. Workbook selection still comes from `NETWORKING_WORKBOOK`.
+
+The 75-test baseline passed before implementation. All 78 tests passed with
+resource warnings enabled after the change. The synthetic workbook tests
+compared the two request interfaces for exact-date, due-through, and empty
+results. Additional cases covered malformed JSON, duplicate keys, errors before
+workbook access, and propagation of unexpected handler errors. The existing
+four-scenario dictionary example also passed.
+
+[PR #35](https://github.com/AICloudDataPulse/ai-system-of-record/pull/35) merged into
+`main` at `663c94183af0afda87b878728ea6f3caba661fde`.
+Both [PR validation](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44211447562)
+and [post-merge validation](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44211809437) passed.
+
 ## 6. Next development tasks
 
 1. Review this documentation status update and its CI result, then merge.
@@ -882,11 +909,10 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–21 are on `main`. The runnable example exercises the same
-dictionary request interface available to Python callers. GitHub-hosted
-validation passed for the Milestone 21 merge. Validation on the developer’s
-Mac and synchronization of its local `main` remain unconfirmed.
+Milestones 1–22 are on `main`. Python callers can now submit either a decoded
+dictionary or JSON text for a read-only follow-up query. Hosted CI passed on
+the Milestone 22 merge. Validation on the developer’s Mac and synchronization
+of its local `main` remain unconfirmed.
 
-The current work is the Milestone 21 documentation update. After review,
-merge, and post-merge validation, agree on the next increment as described
-in section 6. No subsequent feature has been selected.
+Review and merge this documentation update, then verify its post-merge CI
+as described in section 6. The next feature remains open for agreement.
