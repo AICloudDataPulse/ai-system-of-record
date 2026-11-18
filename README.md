@@ -409,8 +409,18 @@ Valid requests return the existing success/error response unchanged.
 The request dictionary is not modified. The handler performs no console I/O,
 accepts no workbook path, and does not catch unexpected exceptions.
 Workbook selection remains controlled by `NETWORKING_WORKBOOK`.
-This is a Python request interface, not a JSON transport, AI integration,
-or authorization layer.
+
+For a request supplied as JSON text, call the Python adapter:
+
+```python
+from networking.followups import handle_followup_json
+
+response = handle_followup_json('{"date":"2026-11-14","include_earlier":true}')
+```
+
+The adapter accepts one JSON document as a Python string and returns the same
+response dictionary as `handle_followup_request()`. Malformed JSON, duplicate
+field names, and non-string inputs return a fixed `INVALID_INPUT` error.
 
 Both CLI formats now collect matching records before printing, using memory
 proportional to the matching results. Query failures produce no partial
