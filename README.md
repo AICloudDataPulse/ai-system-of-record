@@ -436,11 +436,18 @@ a model. For example, “Who is due through November 17, 2026?” maps to
 `{"date":"2026-11-17","include_earlier":true}`. For “Who is due on November
 17, 2026?”, the arguments are `{"date":"2026-11-17"}`.
 
-The host application would route the tool name `get_followups` to
-`handle_followup_request()` for decoded arguments or `handle_followup_json()`
-for serialized arguments. These handlers validate the request and obtain the
-workbook path from local configuration. The definition itself makes no model
-or workbook calls.
+A host can pass the tool name and serialized arguments to the dispatcher.
+For example, this simulates a call with the workbook configured locally:
+
+```python
+from networking.followups import dispatch_tool_call
+
+result = dispatch_tool_call("get_followups", '{"date":"2026-11-17","include_earlier":true}')
+```
+
+The dispatcher accepts the exact name `get_followups` and returns the response
+from `handle_followup_json()`. Any other name yields `UNKNOWN_TOOL` before
+argument parsing or workbook access. The example runs entirely in Python.
 
 The local workbook is the authoritative working record. OneDrive is used for
 backup and recovery, not continuous synchronization managed by this tool.
