@@ -239,6 +239,13 @@ def handle_followup_json(request_text):
     return handle_followup_request(request)
 
 
+def dispatch_tool_call(tool_name, arguments_json):
+    """Route a named tool call with serialized arguments to its handler."""
+    if tool_name != "get_followups":
+        return _error_response("UNKNOWN_TOOL", "Unknown tool name.")
+    return handle_followup_json(arguments_json)
+
+
 def main(*, include_earlier=False, date_value=None, json_output=False):
     if json_output and date_value is None:
         print("--json requires --date.", file=sys.stderr)

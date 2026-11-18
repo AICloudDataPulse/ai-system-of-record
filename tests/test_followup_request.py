@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from openpyxl import Workbook
-from networking.followups import handle_followup_json, handle_followup_request
+from networking.followups import dispatch_tool_call, handle_followup_json, handle_followup_request
 
 
 class FollowupRequestTests(unittest.TestCase):
@@ -91,6 +91,7 @@ class FollowupRequestTests(unittest.TestCase):
                     request = {'date': value, **fields}
                     result = handle_followup_request(request)
                     self.assertEqual(handle_followup_json(json.dumps(request)), result)
+                    self.assertEqual(dispatch_tool_call('get_followups', json.dumps(request)), result)
                     self.assertEqual(set(result), {'ok', 'query_date', 'mode', 'contacts', 'total'})
                     self.assertTrue(result['ok'])
                     self.assertEqual(result['query_date'], value.strip())
