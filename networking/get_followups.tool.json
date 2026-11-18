@@ -1,0 +1,21 @@
+{
+  "name": "get_followups",
+  "description": "Look up networking contacts by their scheduled follow-up date. Use this read-only tool when asked who is due on a date or through a date. Results include each matching contact's name, company, next action, and due date. The query uses due dates regardless of completion status.",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "date": {
+        "type": "string",
+        "format": "date",
+        "description": "Calendar date in YYYY-MM-DD format."
+      },
+      "include_earlier": {
+        "type": "boolean",
+        "default": false,
+        "description": "Set to true for follow-ups due on or before the date. Omit or set to false for that date alone."
+      }
+    },
+    "required": ["date"],
+    "additionalProperties": false
+  }
+}
