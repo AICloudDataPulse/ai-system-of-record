@@ -212,6 +212,33 @@ def handle_followup_request(request):
     )
 
 
+def _unique_json_fields(pairs):
+    fields = dict(pairs)
+    if len(fields) != len(pairs):
+        raise ValueError("Duplicate JSON field")
+    return fields
+
+
+def _reject_json_constant(value):
+    raise ValueError("Invalid JSON constant")
+
+
+def handle_followup_json(request_text):
+    """Decode one JSON request and return the dictionary handler's response."""
+    message = "Provide one JSON document with unique field names."
+    if not isinstance(request_text, str):
+        return _error_response("INVALID_INPUT", message)
+    try:
+        request = json.loads(
+            request_text,
+            object_pairs_hook=_unique_json_fields,
+            parse_constant=_reject_json_constant,
+        )
+    except (ValueError, RecursionError):
+        return _error_response("INVALID_INPUT", message)
+    return handle_followup_request(request)
+
+
 def main(*, include_earlier=False, date_value=None, json_output=False):
     if json_output and date_value is None:
         print("--json requires --date.", file=sys.stderr)

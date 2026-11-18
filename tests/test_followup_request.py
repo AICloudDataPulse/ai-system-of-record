@@ -7,7 +7,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from openpyxl import Workbook
-from networking.followups import handle_followup_request
+from networking.followups import handle_followup_json, handle_followup_request
 
 
 class FollowupRequestTests(unittest.TestCase):
@@ -88,7 +88,9 @@ class FollowupRequestTests(unittest.TestCase):
                     patch('sys.stdout', new_callable=StringIO) as stdout,
                     patch('sys.stderr', new_callable=StringIO) as stderr,
                 ):
-                    result = handle_followup_request({'date': value, **fields})
+                    request = {'date': value, **fields}
+                    result = handle_followup_request(request)
+                    self.assertEqual(handle_followup_json(json.dumps(request)), result)
                     self.assertEqual(set(result), {'ok', 'query_date', 'mode', 'contacts', 'total'})
                     self.assertTrue(result['ok'])
                     self.assertEqual(result['query_date'], value.strip())
@@ -112,6 +114,47 @@ class FollowupRequestTests(unittest.TestCase):
                 with self.assertRaises(type(error)) as raised:
                     handle_followup_request({'date': '2026-11-14'})
                 self.assertIs(raised.exception, error)
+
+
+class FollowupJsonRequestTests(unittest.TestCase):
+    def test_decode_failures_are_fixed_and_skip_delegation(self):
+        cases = (
+            None, {}, b'{}', '', '{"private":', '{} {}',
+            '{"date":"private","date":"2026-11-14"}',
+            '{"nested":{"field":0,"field":1}}',
+            'NaN', 'Infinity', '-Infinity',
+        )
+        for value in cases:
+            with self.subTest(value=value), patch('networking.followups.handle_followup_request') as handler:
+                self.assertEqual(handle_followup_json(value), {
+                    'ok': False, 'error': {
+                        'code': 'INVALID_INPUT',
+                        'message': 'Provide one JSON document with unique field names.',
+                    },
+                })
+                handler.assert_not_called()
+
+    def test_decoded_invalid_requests_fail_before_workbook_access(self):
+        cases = (
+            '[]', '{"date":"2026-02-30"}',
+            '{"date":"2026-11-14","workbook_path":"private"}',
+        )
+        for value in cases:
+            with (
+                self.subTest(value=value),
+                patch('networking.followups.get_workbook_path') as config,
+                patch('networking.followups.load_workbook') as loader,
+            ):
+                result = handle_followup_json(value)
+                self.assertEqual(result, handle_followup_request(json.loads(value)))
+                self.assertEqual(result['error']['code'], 'INVALID_INPUT')
+                config.assert_not_called()
+                loader.assert_not_called()
+
+    def test_unexpected_handler_error_propagates(self):
+        with patch('networking.followups.handle_followup_request', side_effect=ValueError('bug')):
+            with self.assertRaisesRegex(ValueError, 'bug'):
+                handle_followup_json('{"date":"2026-11-14"}')
 
 
 if __name__ == '__main__':
