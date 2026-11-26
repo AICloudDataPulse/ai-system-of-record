@@ -42,6 +42,35 @@ class LiveExampleTests(unittest.TestCase):
                 self.assertNotIn(private, json.dumps(body))
 
     @patch("examples.live_followups.HTTPSConnection")
+    def test_custom_question_queries_fictional_workbook_once(self, connect):
+        question = "Which follow-ups fall on November 13, 2026?"
+        connection = connect.return_value
+        connection.getresponse.return_value = completed_response([{
+            "type": "function_call", "name": "get_followups",
+            "arguments": '{"date":"2026-11-13"}',
+        }])
+        stdout = io.StringIO()
+        with patch.dict(os.environ, {"NETWORKING_WORKBOOK": "private.xlsx"}), redirect_stdout(stdout):
+            run("test-model", "test-key", question)
+            self.assertEqual(os.environ["NETWORKING_WORKBOOK"], "private.xlsx")
+        connection.request.assert_called_once()
+        body = json.loads(connection.request.call_args.kwargs["body"])
+        self.assertEqual(body["input"], question)
+        output = json.loads(stdout.getvalue())
+        self.assertEqual(output["prompt"], question)
+        result = output["result"]
+        self.assertEqual((result["query_date"], result["mode"], result["total"]),
+                         ("2026-11-13", "exact", 1))
+        self.assertEqual(result["contacts"][0]["name"], "Sam Sample")
+
+    @patch("examples.live_followups.HTTPSConnection")
+    def test_blank_question_fails_before_request(self, connect):
+        for question in ("", "  "):
+            with self.subTest(question=question), self.assertRaisesRegex(ValueError, "nonblank"):
+                run("test-model", "test-key", question)
+        connect.assert_not_called()
+
+    @patch("examples.live_followups.HTTPSConnection")
     def test_zero_or_multiple_calls(self, connect):
         for output in ([], [{"type": "function_call"}] * 2):
             connect.return_value.getresponse.return_value = completed_response(output)
