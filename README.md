@@ -212,7 +212,7 @@ OpenAI model available to your API account that supports function calling.
 python -m examples.live_followups --model YOUR_MODEL
 ```
 
-The example makes up to two billable Responses API requests, one for each
+By default, the example makes up to two billable Responses API requests, one for each
 fictional question. The model chooses whether to call the published tool.
 Python runs the selected call against a temporary workbook and prints the
 results locally. The workbook, its path, and query results stay local.
@@ -223,6 +223,16 @@ for exit status 0. A missing call, multiple calls, or an unexpected query
 result fails the run. CI exercises this path with simulated responses.
 Record live validation separately, including the model used.
 
+To send one question of your own to the OpenAI API, use `--question` with
+fictional details and an explicit date. This makes one billable request.
+The local output shows the interpreted date, mode, matching contacts, and total.
+
+```bash
+python -m examples.live_followups --model YOUR_MODEL --question "Who was due by November 14, 2026, including earlier dates?"
+```
+
+For this question, expect `due_through` and two contacts.
+
 ## Run the tests
 
 With the virtual environment active, run from the repository root:
@@ -231,7 +241,7 @@ With the virtual environment active, run from the repository root:
 python -m unittest discover -s tests -v
 ```
 
-The current suite contains 75 tests and should finish with `OK`.
+The test suite should finish with `OK`.
 It does not require your personal workbook or `NETWORKING_WORKBOOK` setting.
 
 - [tests/test_followups.py](tests/test_followups.py) covers date validation,

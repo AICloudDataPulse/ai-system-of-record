@@ -1,4 +1,4 @@
-"""Run two live tool-selection checks against a temporary fictional workbook."""
+"""Ask a follow-up question or run two fixed checks against a temporary fictional workbook."""
 
 import argparse
 import json
@@ -48,19 +48,31 @@ def request_call(model, key, prompt, tool):
     return calls[0]
 
 
-def run(model, key):
+def run(model, key, question=None):
+    if question is not None and not question.strip():
+        raise ValueError("--question requires a nonblank question.")
     path = Path(__file__).resolve().parents[1] / "networking" / "get_followups.tool.json"
     definition = json.loads(path.read_text(encoding="utf-8"))
     tool = {
         "type": "function", "name": definition["name"], "description": definition["description"],
         "parameters": definition["input_schema"], "strict": False,
     }
+
+    def lookup(prompt):
+        call = request_call(model, key, prompt, tool)
+        result = dispatch_tool_call(call.get("name"), call.get("arguments"))
+        if not result["ok"]:
+            raise ValueError(f"{prompt} Lookup failed ({result['error']['code']}).")
+        return result
+
     with fictional_workbook():
+        if question is not None:
+            result = lookup(question)
+            print(json.dumps({"prompt": question, "result": result}, ensure_ascii=False))
+            return
+
         for prompt, mode, names in SCENARIOS:
-            call = request_call(model, key, prompt, tool)
-            result = dispatch_tool_call(call.get("name"), call.get("arguments"))
-            if not result["ok"]:
-                raise ValueError(f"{prompt} Lookup failed ({result['error']['code']}).")
+            result = lookup(prompt)
             if (result["query_date"] != "2026-11-14" or result["mode"] != mode
                     or [row["name"] for row in result["contacts"]] != names):
                 raise ValueError(f"{prompt} The lookup did not match the expected date, mode, and contacts.")
@@ -70,11 +82,14 @@ def run(model, key):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model", required=True, help="OpenAI model supporting function calls")
+    parser.add_argument(
+        "--question", help="send one question to the OpenAI API and query the fictional workbook",
+    )
     args = parser.parse_args()
     key = os.environ.get("OPENAI_API_KEY", "").strip()
     if not key:
         parser.exit(1, "Set OPENAI_API_KEY in your local environment.\n")
     try:
-        run(args.model, key)
+        run(args.model, key, args.question)
     except (ValueError, OSError, HTTPException) as error:
         parser.exit(1, f"{error}\n")
