@@ -2,10 +2,12 @@
 
 **Repository:** `AICloudDataPulse/ai-system-of-record`  
 **Stable branch:** `main`
-**Current documentation branch:** `docs/milestone-25-status`
+**Current documentation branch:** `docs/milestone-26-status`
 **Active feature development:** None; next increment not yet agreed.
 **Development environment:** macOS, VS Code, Python 3.12.3
-**Status:** Milestones 1–25 completed and merged into `main`.
+**Status:** Milestones 1–26 completed and merged into `main`.
+Milestone 26 added `--question` to the live example. The developer verified a
+custom due-through question on macOS using the temporary fictional workbook.
 Milestone 25 is the first verified live LLM tool call. On macOS, the developer
 used `gpt-4.1-mini` to select and parameterize `get_followups` for two questions.
 Python executed both read-only queries against a temporary fictional workbook.
@@ -215,8 +217,9 @@ when an assistant should request the read-only lookup. Its input schema requires
 `dispatch_tool_call(tool_name, arguments_json)` with the exact name `get_followups`
 and serialized arguments. The dispatcher delegates to `handle_followup_json()`.
 Other names return `UNKNOWN_TOOL` before argument parsing or workbook access.
-The opt-in `examples/live_followups.py` calls the OpenAI Responses API with a
-fixed question and the tool definition. It dispatches the model’s tool call
+The opt-in `examples/live_followups.py` sends the supplied `--question` text and tool definition
+to the OpenAI Responses API in one request. Omitting `--question` runs the two
+fixed scenarios. It dispatches the model’s tool call
 locally and prints the result. Workbook contents, paths, and query results stay
 on the host. The regular `networking/followups.py` CLI runs locally without a
 model call. Natural-language queries against the personal workbook remain future work.
@@ -933,6 +936,22 @@ and after its merge at `683cc04acbcaecbb7b55d7813d5744344e176a93`.
 and [post-merge validation](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/44219157909) both passed.
 The two live results above come from the developer’s separate macOS run.
 
+**Milestone 26 — Custom follow-up question verified on macOS**
+
+[PR #43](https://github.com/AICloudDataPulse/ai-system-of-record/pull/43) added the optional `--question`
+argument and merged into `main` at `6338b2b`.
+
+**Automated validation.** All 86 offline tests and the synthetic example
+passed in [post-merge CI](https://github.com/AICloudDataPulse/ai-system-of-record/actions/runs/45891058585).
+The new tests exercised a custom question through local dispatch using a
+simulated API response and checked that a blank question fails before any request.
+
+**Live validation.** On macOS, the developer asked `gpt-4.1-mini`,
+“Who was due by November 14, 2026, including earlier dates?” The resulting
+read-only query used `due_through` with a cutoff of `2026-11-14`. Python
+returned Alex Example (due November 14) and Sam Sample (due November 13)
+from the fictional workbook, for a total of two contacts.
+
 ## 6. Next development tasks
 
 1. Review this documentation status update and its CI result, then merge.
@@ -957,7 +976,8 @@ Implement validated changes with backups and explicit authorization.
 **Phase 3 — AI integration**
 
 Milestone 25 verified the first narrow operation with a live model and fictional
-contacts. Natural-language access to the personal workbook remains future work.
+contacts. Milestone 26 extended the live example to a developer-supplied question.
+Natural-language access to the personal workbook remains future work.
 
 **Phase 4 — MCP integration**
 
@@ -988,8 +1008,8 @@ Introduce audit trails, authorization boundaries, error recovery, and operationa
 
 ## 9. Current stopping point
 
-Milestones 1–25 are on `main`. Live selection of the read-only follow-up tool
-and local execution are verified for both fixed prompts against fictional data.
+Milestones 1–26 are on `main`. Live runs verified both fixed prompts and one
+custom question against the fictional workbook.
 The personal workbook remains accessible through the deterministic local CLI.
 
 Review and merge this documentation update, then verify its post-merge CI
